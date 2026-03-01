@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#faf9f7" id="metaThemeColor">
+<meta name="description" content="Real scheduling guides for global business corridors. Honest overlap windows, DST trap dates, and fairness analysis for the pairs that actually matter.">
+<title>Scheduling Guides by City Pair — World Hour</title>
+<link rel="canonical" href="https://worldhour.app/guides">
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://worldhour.app/guides">
+<meta property="og:title"       content="Scheduling Guides by City Pair — World Hour">
+<meta property="og:description" content="Real scheduling guides for global business corridors. Honest overlap windows, DST trap dates, and fairness analysis.">
+<meta property="og:site_name"   content="World Hour">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Scheduling Guides by City Pair — World Hour",
+  "url": "https://worldhour.app/guides",
+  "description": "Real scheduling guides for global business corridors.",
+  "isPartOf": { "@type": "WebSite", "name": "World Hour", "url": "https://worldhour.app/" }
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1220'/%3E%3Ccircle cx='16' cy='16' r='11' stroke='%233B82F6' stroke-width='2.2' fill='none' stroke-dasharray='52.36 10.47' stroke-dashoffset='-15.71' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='13.8' y2='11.8' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='21.5' y2='19.2' stroke='%2360A5FA' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='1.4' fill='%233B82F6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --c-bg:        #faf9f7;
+  --c-surface:   #ffffff;
+  --c-surface2:  #f4f2ee;
+  --c-border:    #e4e0d8;
+  --c-border2:   #d4cfc5;
+  --c-ink:       #1c1916;
+  --c-ink2:      #4a4540;
+  --c-ink3:      #8c8680;
+  --c-ink4:      #b8b2aa;
+  --c-accent:    #c96a3a;
+  --c-accent-bg: #fdf1eb;
+  --c-accent-lt: #f5c4a8;
+  --font-ui:     'Outfit', system-ui, sans-serif;
+  --font-prose:  'Source Serif 4', Georgia, serif;
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-full: 999px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+}
+[data-theme="dark"] {
+  --c-bg:        #141210;
+  --c-surface:   #1e1c19;
+  --c-surface2:  #28251f;
+  --c-border:    #3a352c;
+  --c-border2:   #4a4438;
+  --c-ink:       #f0ede8;
+  --c-ink2:      #c4bdb4;
+  --c-ink3:      #8c8680;
+  --c-ink4:      #5c5850;
+  --c-accent:    #e07a48;
+  --c-accent-bg: #2a1c12;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-ui);
+  background: var(--c-bg);
+  color: var(--c-ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+.topbar {
+  position: sticky; top: 0; z-index: 30; height: 56px;
+  background: var(--c-bg); border-bottom: 1px solid var(--c-border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; backdrop-filter: blur(12px);
+}
+.topbar-logo {
+  display: flex; align-items: center; gap: 8px; text-decoration: none;
+}
+.topbar-logo-icon { width: 28px; height: 28px; }
+.topbar-logo-world { font-size: 13px; font-weight: 700; color: var(--c-ink); letter-spacing: -0.01em; line-height: 1.1; }
+.topbar-logo-hour  { font-size: 10px; font-weight: 400; color: var(--c-ink4); letter-spacing: 0.06em; line-height: 1; text-transform: uppercase; }
+.topbar-wordmark { display: flex; flex-direction: column; }
+.topbar-nav { display: flex; gap: 4px; }
+.topbar-nav a { font-size: 13px; font-weight: 500; color: var(--c-ink3); text-decoration: none; padding: 6px 10px; border-radius: var(--r-sm); transition: all 0.15s; }
+.topbar-nav a:hover, .topbar-nav a.active { color: var(--c-ink); background: var(--c-surface2); }
+.icon-btn { width: 36px; height: 36px; border-radius: var(--r-sm); border: none; background: none; color: var(--c-ink2); cursor: pointer; font-size: 18px; transition: background 0.15s; }
+.icon-btn:hover { background: var(--c-surface2); }
+.page-wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* Header */
+.page-header { padding: 40px 0 32px; }
+.page-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-accent); margin-bottom: 12px; }
+.page-title { font-family: var(--font-prose); font-size: clamp(26px, 5vw, 36px); font-weight: 300; line-height: 1.2; color: var(--c-ink); letter-spacing: -0.02em; margin-bottom: 12px; }
+.page-lede { font-family: var(--font-prose); font-size: 17px; font-weight: 300; line-height: 1.65; color: var(--c-ink2); max-width: 560px; }
+
+/* Region sections */
+.region-section { margin-bottom: 44px; }
+.region-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--c-ink4);
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+/* Guide card rows */
+.guide-list { display: flex; flex-direction: column; }
+.guide-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 2px 16px;
+  align-items: start;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--c-border);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.guide-item:last-child { border-bottom: none; }
+.guide-item:hover { opacity: 0.7; }
+.guide-item-name { font-size: 16px; font-weight: 500; color: var(--c-ink); grid-column: 1; grid-row: 1; }
+.guide-item-desc { font-size: 13px; color: var(--c-ink3); line-height: 1.5; grid-column: 1; grid-row: 2; margin-top: 2px; }
+.guide-item-tag  { font-size: 11px; color: var(--c-ink4); grid-column: 2; grid-row: 1; white-space: nowrap; align-self: center; }
+
+/* Coming soon items */
+.guide-item.soon { opacity: 0.38; pointer-events: none; cursor: default; }
+.guide-item.soon .guide-item-tag { color: var(--c-ink4); }
+
+/* Converter CTA */
+.cta-card {
+  background: var(--c-surface); border: 1px solid var(--c-border);
+  border-radius: var(--r-xl); padding: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap; margin-top: 12px;
+}
+.cta-text-title { font-size: 15px; font-weight: 600; color: var(--c-ink); margin-bottom: 4px; }
+.cta-text-body  { font-size: 13px; color: var(--c-ink3); line-height: 1.5; }
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; background: var(--c-accent); color: #fff;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+  text-decoration: none; border-radius: var(--r-full); transition: opacity 0.15s; white-space: nowrap;
+}
+.cta-btn:hover { opacity: 0.88; }
+
+/* Footer */
+.page-footer { margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.footer-brand { font-size: 13px; font-weight: 600; color: var(--c-ink3); text-decoration: none; }
+.footer-brand:hover { color: var(--c-ink); }
+.footer-links { display: flex; gap: 16px; }
+.footer-links a { font-size: 13px; color: var(--c-ink4); text-decoration: none; transition: color 0.15s; }
+.footer-links a:hover { color: var(--c-ink2); }
+</style>
+</head>
+<body>
+<script>
+  (function() {
+    const saved = localStorage.getItem('wh_theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+
+<nav class="topbar" role="navigation" aria-label="Site navigation">
+  <a href="https://worldhour.app/" class="topbar-logo" aria-label="World Hour home">
+    <svg class="topbar-logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="wh-l" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#1D4ED8"/></linearGradient>
+        <linearGradient id="wh-d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#60A5FA"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient>
+      </defs>
+      <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.15"/>
+      <line x1="14" y1="2" x2="14" y2="4.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+      <line x1="26" y1="14" x2="23.2" y2="14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+      <line x1="14" y1="26" x2="14" y2="23.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+      <line x1="2" y1="14" x2="4.8" y2="14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+      <circle cx="14" cy="14" r="9.5" stroke="url(#wh-l)" stroke-width="2" fill="none" stroke-dasharray="49.74 9.95" stroke-dashoffset="-14.92" stroke-linecap="round"/>
+      <line x1="14" y1="14" x2="10.78" y2="11.30" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.82"/>
+      <line x1="14" y1="14" x2="19.46" y2="17.15" stroke="url(#wh-l)" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="14" cy="14" r="1.4" fill="#2563EB"/>
+      <circle cx="14" cy="14" r="0.7" fill="currentColor"/>
+    </svg>
+    <div class="topbar-wordmark">
+      <span class="topbar-logo-world">World</span>
+      <span class="topbar-logo-hour">Hour</span>
+    </div>
+  </a>
+  <div class="topbar-nav">
+    <a href="https://worldhour.app/">Converter</a>
+    <a href="https://worldhour.app/guides" class="active">Guides</a>
+  </div>
+  <div>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode">◑</button>
+  </div>
+</nav>
+
+<main>
+<div class="page-wrap">
+
+  <header class="page-header">
+    <div class="page-eyebrow">World Hour</div>
+    <h1 class="page-title">The Real Scheduling Guides</h1>
+    <p class="page-lede">Not just the time difference — the real overlap window, who absorbs the cost, and when your standing invites quietly break.</p>
+  </header>
+
+  <!-- Europe ↔ North America -->
+  <section class="region-section" aria-labelledby="r-eu-na">
+    <div class="region-label" id="r-eu-na">Europe ↔ North America</div>
+    <div class="guide-list">
+      <a href="https://worldhour.app/new-york-to-london-time" class="guide-item">
+        <span class="guide-item-name">New York ↔ London</span>
+        <span class="guide-item-desc">Only ~3 real overlap hours — all at London's end of day.</span>
+        <span class="guide-item-tag">5 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/frankfurt-to-new-york-time" class="guide-item">
+        <span class="guide-item-name">Frankfurt ↔ New York</span>
+        <span class="guide-item-desc">The financial market axis. Two market opens, 6 hours apart, one narrow window.</span>
+        <span class="guide-item-tag">6 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/stockholm-to-new-york-time" class="guide-item">
+        <span class="guide-item-name">Stockholm ↔ New York</span>
+        <span class="guide-item-desc">Overlap lives entirely in Sweden's late afternoon — 3 hours that disappear fast.</span>
+        <span class="guide-item-tag">6 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/gothenburg-to-detroit-time" class="guide-item">
+        <span class="guide-item-name">Gothenburg ↔ Detroit</span>
+        <span class="guide-item-desc">The Volvo–Michigan corridor. 3 hours of overlap, all at Sweden's end of day.</span>
+        <span class="guide-item-tag">6 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/amsterdam-to-new-york-time" class="guide-item">
+        <span class="guide-item-name">Amsterdam ↔ New York</span>
+        <span class="guide-item-desc">ASML, Shell, Philips and the Dutch–US corridor. 3 hours of overlap, all in Amsterdam's late afternoon.</span>
+        <span class="guide-item-tag">6 hr gap</span>
+      </a>
+      <div class="guide-item soon">
+        <span class="guide-item-name">Amsterdam ↔ New York</span>
+        <span class="guide-item-desc">Dutch multinationals with US operations — same window as Frankfurt, different stakes.</span>
+        <span class="guide-item-tag">Coming soon</span>
+      </div>
+      <div class="guide-item soon">
+        <span class="guide-item-name">San Francisco ↔ London</span>
+        <span class="guide-item-desc">The startup and VC corridor — 8 hours apart, almost no clean overlap.</span>
+        <span class="guide-item-tag">Coming soon</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Europe ↔ Middle East / Asia -->
+  <section class="region-section" aria-labelledby="r-eu-asia">
+    <div class="region-label" id="r-eu-asia">Europe ↔ Middle East &amp; Asia</div>
+    <div class="guide-list">
+      <a href="https://worldhour.app/london-to-dubai-time" class="guide-item">
+        <span class="guide-item-name">London ↔ Dubai</span>
+        <span class="guide-item-desc">Dubai never moves. Only London's clocks shift — and that changes everything twice a year.</span>
+        <span class="guide-item-tag">3–4 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/dubai-to-new-york-time" class="guide-item">
+        <span class="guide-item-name">Dubai ↔ New York</span>
+        <span class="guide-item-desc">8–9 hours apart. New York mornings and Dubai late afternoons are the only viable window.</span>
+        <span class="guide-item-tag">8–9 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/london-to-singapore-time" class="guide-item">
+        <span class="guide-item-name">London ↔ Singapore</span>
+        <span class="guide-item-desc">Near-zero standard overlap — 7 or 8 hours apart depending on UK DST.</span>
+        <span class="guide-item-tag">7–8 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/munich-to-seoul-time" class="guide-item">
+        <span class="guide-item-name">Munich ↔ Seoul</span>
+        <span class="guide-item-desc">German automotive meets Korean manufacturing — 1–2 hours of overlap, all at Seoul's end of day.</span>
+        <span class="guide-item-tag">7–8 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/stuttgart-to-beijing-time" class="guide-item">
+        <span class="guide-item-name">Stuttgart ↔ Beijing</span>
+        <span class="guide-item-desc">Daimler and China JV coordination — 2–3 hours of overlap in Germany's morning and China's late afternoon.</span>
+        <span class="guide-item-tag">6–7 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/london-to-mumbai-time" class="guide-item">
+        <span class="guide-item-name">London ↔ Mumbai</span>
+        <span class="guide-item-desc">The +5:30 offset — never round India to "5 hours ahead." 3–4 hours of clean overlap in London mornings.</span>
+        <span class="guide-item-tag">4.5–5.5 hr gap</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- US Domestic -->
+  <section class="region-section" aria-labelledby="r-us">
+    <div class="region-label" id="r-us">US Domestic</div>
+    <div class="guide-list">
+      <a href="https://worldhour.app/new-york-to-los-angeles-time" class="guide-item">
+        <span class="guide-item-name">New York ↔ Los Angeles</span>
+        <span class="guide-item-desc">3 hours, always. Still costs someone their morning or evening.</span>
+        <span class="guide-item-tag">3 hr gap</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Americas -->
+  <section class="region-section" aria-labelledby="r-am">
+    <div class="region-label" id="r-am">Americas</div>
+    <div class="guide-list">
+      <a href="https://worldhour.app/sao-paulo-to-new-york-time" class="guide-item">
+        <span class="guide-item-name">São Paulo ↔ New York</span>
+        <span class="guide-item-desc">Only 1–2 hours apart — but the small gap is exactly why standing invites quietly break every March and November.</span>
+        <span class="guide-item-tag">1–2 hr gap</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- APAC ↔ Europe / Americas -->
+  <section class="region-section" aria-labelledby="r-apac">
+    <div class="region-label" id="r-apac">APAC ↔ Europe &amp; Americas</div>
+    <div class="guide-list">
+      <a href="https://worldhour.app/stockholm-to-tokyo-time" class="guide-item">
+        <span class="guide-item-name">Stockholm ↔ Tokyo</span>
+        <span class="guide-item-desc">One real overlap hour — Japan never moves, Sweden does twice a year.</span>
+        <span class="guide-item-tag">7–8 hr gap</span>
+      </a>
+      <a href="https://worldhour.app/sydney-to-london-time" class="guide-item">
+        <span class="guide-item-name">Sydney ↔ London</span>
+        <span class="guide-item-desc">Opposite hemispheres — the gap changes direction twice a year, passing through three different phases.</span>
+        <span class="guide-item-tag">9–11 hr gap</span>
+      </a>
+      <div class="guide-item soon">
+        <span class="guide-item-name">Tokyo ↔ New York</span>
+        <span class="guide-item-desc">13–14 hours apart. Every meeting lands on a different calendar day for someone.</span>
+        <span class="guide-item-tag">Coming soon</span>
+      </div>
+      <div class="guide-item soon">
+        <span class="guide-item-name">Singapore ↔ New York</span>
+        <span class="guide-item-desc">12–13 hour gap — the corridor where no time is convenient for anyone.</span>
+        <span class="guide-item-tag">Coming soon</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-card">
+    <div>
+      <div class="cta-text-title">Need to find a time right now?</div>
+      <div class="cta-text-body">Use the converter to see the gap live and find a slot that works for both sides.</div>
+    </div>
+    <a href="https://worldhour.app/" class="cta-btn">Open the converter →</a>
+  </div>
+
+  <footer class="page-footer" role="contentinfo">
+    <a href="https://worldhour.app/" class="footer-brand">World Hour</a>
+    <div class="footer-links">
+      <a href="https://worldhour.app/">Converter</a>
+      <a href="https://worldhour.app/guides">All guides</a>
+    </div>
+  </footer>
+
+</div>
+</main>
+
+<script>
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const isDark = document.documentElement.hasAttribute('data-theme');
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('wh_theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('wh_theme', 'dark');
+    }
+    document.getElementById('metaThemeColor').content =
+      document.documentElement.hasAttribute('data-theme') ? '#141210' : '#faf9f7';
+  });
+</script>
+</body>
+</html>

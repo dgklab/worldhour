@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#faf9f7" id="metaThemeColor">
+<title>Page not found — World Hour</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Source+Serif+4:opsz,wght@8..60,300&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1220'/%3E%3Ccircle cx='16' cy='16' r='11' stroke='%233B82F6' stroke-width='2.2' fill='none' stroke-dasharray='52.36 10.47' stroke-dashoffset='-15.71' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='13.8' y2='11.8' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='21.5' y2='19.2' stroke='%2360A5FA' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='1.4' fill='%233B82F6'/%3E%3C/svg%3E">
+<style>
+:root {
+  --c-bg:      #faf9f7;
+  --c-surface: #ffffff;
+  --c-border:  #e4e0d8;
+  --c-ink:     #1c1916;
+  --c-ink2:    #4a4540;
+  --c-ink3:    #8c8680;
+  --c-ink4:    #b8b2aa;
+  --c-accent:  #c96a3a;
+  --c-accent-bg: #fdf1eb;
+  --font-ui:   'Outfit', system-ui, sans-serif;
+  --font-time: 'Source Serif 4', Georgia, serif;
+}
+[data-theme="dark"] {
+  --c-bg:      #141210;
+  --c-surface: #1e1c19;
+  --c-border:  #3a352c;
+  --c-ink:     #f0ede8;
+  --c-ink2:    #c4bdb4;
+  --c-ink3:    #8c8680;
+  --c-ink4:    #5c5850;
+  --c-accent:  #e07a48;
+  --c-accent-bg: #2a1c12;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-ui);
+  background: var(--c-bg);
+  color: var(--c-ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+.container {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+.clock-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 28px;
+  opacity: 0.4;
+}
+.error-code {
+  font-family: var(--font-time);
+  font-size: 72px;
+  font-weight: 300;
+  color: var(--c-ink);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+.error-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--c-ink2);
+  margin-bottom: 10px;
+}
+.error-text {
+  font-size: 14px;
+  color: var(--c-ink4);
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--c-accent);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: opacity 0.15s;
+  margin-bottom: 16px;
+}
+.btn-primary:hover { opacity: 0.88; }
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 20px;
+  color: var(--c-ink4);
+  font-size: 12px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--c-border);
+}
+.guide-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--c-surface);
+  text-align: left;
+}
+.guide-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--c-border);
+  text-decoration: none;
+  transition: background 0.12s;
+}
+.guide-link:last-child { border-bottom: none; }
+.guide-link:hover { background: var(--c-accent-bg); }
+.guide-link-name { font-size: 13px; font-weight: 500; color: var(--c-ink); }
+.guide-link-desc { font-size: 11px; color: var(--c-ink4); }
+.footer-note {
+  margin-top: 32px;
+  font-size: 12px;
+  color: var(--c-ink4);
+}
+.footer-note a { color: var(--c-ink3); text-decoration: none; }
+.footer-note a:hover { color: var(--c-ink); }
+</style>
+</head>
+<body>
+<script>
+  (function() {
+    const saved = localStorage.getItem('wh_theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+
+<div class="container">
+
+  <svg class="clock-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+    <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2.5"/>
+    <line x1="32" y1="32" x2="24" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="32" y1="32" x2="46" y2="38" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="2.5" fill="currentColor"/>
+    <line x1="32" y1="4"  x2="32" y2="9"  stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+    <line x1="32" y1="55" x2="32" y2="60" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+    <line x1="4"  y1="32" x2="9"  y2="32" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+    <line x1="55" y1="32" x2="60" y2="32" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  </svg>
+
+  <div class="error-code">404</div>
+  <div class="error-title">This page doesn't exist</div>
+  <p class="error-text">The guide or page you're looking for hasn't been built yet — or the URL has moved.</p>
+
+  <a href="https://worldhour.app/" class="btn-primary">
+    Open the converter
+  </a>
+
+  <div class="divider">or browse a guide</div>
+
+  <div class="guide-links">
+    <a href="https://worldhour.app/new-york-to-london-time" class="guide-link">
+      <span class="guide-link-name">New York ↔ London</span>
+      <span class="guide-link-desc">Only ~3 real hours</span>
+    </a>
+    <a href="https://worldhour.app/frankfurt-to-new-york-time" class="guide-link">
+      <span class="guide-link-name">Frankfurt ↔ New York</span>
+      <span class="guide-link-desc">The financial axis</span>
+    </a>
+    <a href="https://worldhour.app/london-to-dubai-time" class="guide-link">
+      <span class="guide-link-name">London ↔ Dubai</span>
+      <span class="guide-link-desc">Only one side moves</span>
+    </a>
+    <a href="https://worldhour.app/stockholm-to-new-york-time" class="guide-link">
+      <span class="guide-link-name">Stockholm ↔ New York</span>
+      <span class="guide-link-desc">Overlap at Sweden's end of day</span>
+    </a>
+    <a href="https://worldhour.app/new-york-to-los-angeles-time" class="guide-link">
+      <span class="guide-link-name">New York ↔ Los Angeles</span>
+      <span class="guide-link-desc">3 hours always — still costs someone</span>
+    </a>
+  </div>
+
+  <p class="footer-note">
+    <a href="https://worldhour.app/">World Hour</a> — Find meeting times that work for everyone
+  </p>
+
+</div>
+</body>
+</html>

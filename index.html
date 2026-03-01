@@ -1,0 +1,4425 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#faf9f7" id="metaThemeColor">
+<meta name="description" content="Compare time zones, find meeting overlap and convert times across cities. A free, fast time zone tool that works offline.">
+<title>World Hour — Global Time, Simplified</title>
+
+<!-- Canonical URL — update to your actual domain before deploying -->
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<link rel="canonical" href="https://worldhour.app/">
+
+<!-- Open Graph — controls link previews in Slack, WhatsApp, iMessage, LinkedIn -->
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://worldhour.app/">
+<meta property="og:title"       content="World Hour — Global Time, Simplified">
+<meta property="og:description" content="Compare time zones, find meeting overlap and convert times across cities. Free, fast and works offline.">
+<meta property="og:site_name"   content="World Hour">
+
+<!-- Twitter / X card -->
+<meta name="twitter:card"        content="summary">
+<meta name="twitter:title"       content="World Hour — Global Time, Simplified">
+<meta name="twitter:description" content="Compare time zones, find meeting overlap and convert times across cities. Free, fast and works offline.">
+
+<!-- Structured data — WebApplication schema for Google rich results -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "World Hour",
+  "url": "https://worldhour.app/",
+  "description": "Compare time zones, find meeting overlap and convert times across cities. Free, fast and works offline.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "World clock with multiple cities",
+    "Time zone converter",
+    "Meeting planner with overlap detection",
+    "Meeting Cost fairness scoring",
+    "Offline support"
+  ]
+}
+</script>
+<!-- Favicon: inline SVG data URI — no external file needed -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1220'/%3E%3Ccircle cx='16' cy='16' r='11' stroke='%233B82F6' stroke-width='2.2' fill='none' stroke-dasharray='52.36 10.47' stroke-dashoffset='-15.71' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='13.8' y2='11.8' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='21.5' y2='19.2' stroke='%2360A5FA' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='1.4' fill='%233B82F6'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1220'/%3E%3Ccircle cx='16' cy='16' r='11' stroke='%233B82F6' stroke-width='2.2' fill='none' stroke-dasharray='52.36 10.47' stroke-dashoffset='-15.71' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='13.8' y2='11.8' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3Cline x1='16' y1='16' x2='21.5' y2='19.2' stroke='%2360A5FA' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='1.4' fill='%233B82F6'/%3E%3C/svg%3E" sizes="any">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.4.4/luxon.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400&display=swap" rel="stylesheet">
+<style>
+/* Screen-reader only — visually hidden but indexed by Google, readable by assistive tech */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root {
+  --c-bg:        #faf9f7;
+  --c-surface:   #ffffff;
+  --c-surface2:  #f4f2ee;
+  --c-surface3:  #ece9e3;
+  --c-border:    #e4e0d8;
+  --c-border2:   #d4cfc5;
+  --c-ink:       #1c1916;
+  --c-ink2:      #4a4540;
+  --c-ink3:      #8c8680;
+  --c-ink4:      #b8b2aa;
+  --c-accent:    #c96a3a;
+  --c-accent-bg: #fdf1eb;
+  --c-accent-lt: #f5c4a8;
+  --c-green:     #3a7a54;
+  --c-green-bg:  #edf5f0;
+  --c-amber:     #9a7010;
+  --c-amber-bg:  #fdf8e8;
+  --c-blue:      #3a5a8a;
+  --c-blue-bg:   #edf2f9;
+  --c-red:       #b84040;
+  --c-red-bg:    #fdf0f0;
+  --c-night:     #4a4870;
+  --c-night-bg:  #f0eff8;
+
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   20px;
+  --r-full: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+
+  --font-ui:   'Outfit', system-ui, sans-serif;
+  --font-time: 'Source Serif 4', Georgia, serif;
+
+  --nav-h: 64px;
+  --topbar-h: 56px;
+}
+
+[data-theme="dark"] {
+  --c-bg:        #141210;
+  --c-surface:   #1e1c19;
+  --c-surface2:  #28251f;
+  --c-surface3:  #322e26;
+  --c-border:    #3a352c;
+  --c-border2:   #4a4438;
+  --c-ink:       #f0ede8;
+  --c-ink2:      #c4bdb4;
+  --c-ink3:      #8c8680;
+  --c-ink4:      #5c5850;
+  --c-accent:    #e07a48;
+  --c-accent-bg: #2a1c12;
+  --c-green-bg:  #101f16;
+  --c-amber-bg:  #1e1a08;
+  --c-blue-bg:   #0e1620;
+  --c-red-bg:    #1e0e0e;
+  --c-night-bg:  #12111e;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+}
+
+/* Topbar icon — dark mode toggles which arc and pivot are visible */
+.tb-light-only { display: inherit; }
+.tb-dark-only  { display: none; }
+[data-theme="dark"] .tb-light-only { display: none; }
+[data-theme="dark"] .tb-dark-only  { display: inherit; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--c-bg);
+  color: var(--c-ink);
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT SHELL
+═══════════════════════════════════════ */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--topbar-h);
+  background: var(--c-bg);
+  border-bottom: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.topbar-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--c-ink);
+  letter-spacing: -0.01em;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: none;
+  color: var(--c-ink2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-size: 18px;
+  -webkit-tap-highlight-color: transparent;
+}
+.icon-btn:hover { background: var(--c-surface2); color: var(--c-ink); }
+.icon-btn:active { background: var(--c-surface3); }
+
+.page-content {
+  flex: 1;
+  padding: 0 0 calc(var(--nav-h) + 16px);
+  overflow-y: auto;
+}
+
+/* ═══════════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════════ */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100%; max-width: 480px;
+  height: var(--nav-h);
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  display: flex;
+  align-items: stretch;
+  z-index: 40;
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  color: var(--c-ink4);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  padding: 8px 4px 12px;
+}
+
+.nav-tab .nav-icon {
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.nav-tab.active {
+  color: var(--c-accent);
+}
+
+.nav-tab.active .nav-icon {
+  transform: scale(1.1);
+}
+
+/* ═══════════════════════════════════════
+   ONBOARDING SCREEN
+═══════════════════════════════════════ */
+
+.onboarding-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--c-bg);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Onboarding logo — replaces emoji, no layout shift */
+.ob-logo {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 24px;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* The dark-mode SVG is hidden by default, shown when [data-theme=dark] */
+.ob-logo-light { display: block; }
+.ob-logo-dark  { display: none;  }
+[data-theme="dark"] .ob-logo-light { display: none;  }
+[data-theme="dark"] .ob-logo-dark  { display: block; }
+
+/* Topbar logo — replaces plain text */
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.topbar-logo-icon {
+  height: 28px;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.topbar-logo-wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.topbar-logo-world {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: var(--c-ink);
+  opacity: 0.70;
+}
+
+.topbar-logo-hour {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--c-ink);
+  margin-top: 1px;
+}
+
+/* Tab context label — replaces old topbar title text on non-clock tabs */
+.topbar-tab-label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--c-ink4);
+  margin-top: 0px;
+  min-height: 0;
+  line-height: 1;
+}
+.topbar-tab-label:empty { display: none; }
+
+.ob-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--c-ink);
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.ob-text {
+  font-size: 15px;
+  color: var(--c-ink3);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* ── Live preview ─────────────────────────────── */
+.ob-preview {
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.ob-preview-utc {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--c-ink4);       /* lowest contrast — ambient info */
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ob-preview-utc-label {
+  opacity: 0.70;
+  font-weight: 400;
+  margin-right: 5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.ob-preview-cities {
+  display: flex;
+  justify-content: center;
+  gap: 28px;                  /* spacing replaces border separators */
+  width: 100%;
+}
+
+.ob-preview-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* no border — removed per spec */
+}
+
+/* no dividers */
+.ob-preview-item + .ob-preview-item {
+  border-left: none;
+}
+
+.ob-preview-city {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--c-ink4);       /* lower contrast than time values */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.ob-preview-time {
+  font-size: 20px;            /* larger than city labels */
+  font-weight: 400;
+  color: var(--c-ink2);       /* higher than city label, lower than main content */
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  /* minute-change transition — subtle upward slip */
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+/* Tick animation class — applied briefly on minute change.
+   Covers both preview times and selected-city time. */
+.ob-preview-time.ob-tick-out,
+.ob-sel-time.ob-tick-out {
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.08s ease, transform 0.08s ease;
+}
+
+/* Colon blink — targets only the separator span */
+@keyframes ob-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.25; }
+}
+
+.ob-colon {
+  display: inline-block;
+  animation: ob-blink 1s step-start infinite;
+  font-style: normal;
+}
+
+/* UTC colon blink */
+.ob-preview-utc .ob-colon {
+  animation: ob-blink 1s step-start infinite;
+}
+
+/* Selected city time — right-aligned in the card */
+.ob-sel-time {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  margin-left: auto;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.ob-search-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 20px;
+}
+
+.ob-search {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  color: var(--c-ink);
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border2);    /* slightly darker resting border */
+  border-radius: var(--r-lg);
+  padding: 17px 44px 17px 16px;           /* +3px top/bottom vs 14px — ~6px taller */
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.ob-search:focus {
+  border-color: var(--c-accent);
+  /* Fallback for Safari < 16.2 which lacks color-mix() */
+  box-shadow: 0 0 0 3px rgba(201, 106, 58, 0.14);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 14%, transparent);
+}
+.ob-search::placeholder {
+  color: var(--c-ink4);
+  opacity: 1;                              /* Firefox resets opacity — force 1 */
+}
+
+.ob-search-icon {
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--c-ink4);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.ob-selected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--c-accent-bg);
+  border: 1.5px solid var(--c-border2);   /* neutral — CTA stays dominant accent */
+  border-radius: var(--r-lg);
+  padding: 12px 16px;
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 24px;
+}
+
+.ob-selected-flag { font-size: 22px; }
+.ob-selected-name { font-size: 15px; font-weight: 600; color: var(--c-ink); flex: 1; }
+.ob-selected-tz   { font-size: 12px; color: var(--c-ink3); }
+
+.ob-btn-primary {
+  width: 100%; max-width: 340px;
+  padding: 15px;
+  background: var(--c-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-lg);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  margin-bottom: 12px;
+}
+.ob-btn-primary:hover { opacity: 0.92; }
+.ob-btn-primary:active { transform: scale(0.98); }
+.ob-btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+.ob-btn-secondary {
+  font-family: var(--font-ui);
+  font-size: 15px;                        /* up from 14px — intentional, not disabled */
+  color: var(--c-ink2);                   /* up from ink3 — readable, still secondary */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.15s;
+}
+.ob-btn-secondary:hover { color: var(--c-ink); }
+
+/* ═══════════════════════════════════════
+   CITY SEARCH DROPDOWN (shared)
+═══════════════════════════════════════ */
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 200;
+  display: none;
+}
+.search-dropdown.open { display: block; }
+.search-dropdown::-webkit-scrollbar { width: 3px; }
+.search-dropdown::-webkit-scrollbar-thumb { background: var(--c-border2); border-radius: 2px; }
+
+.dd-group-label {
+  padding: 10px 14px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+  border-top: 1px solid var(--c-border);
+}
+.dd-group-label:first-child { border-top: none; padding-top: 6px; }
+
+.dd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.dd-row:hover, .dd-row.hi { background: var(--c-surface2); }
+.dd-flag { font-size: 20px; flex-shrink: 0; }
+.dd-info { flex: 1; min-width: 0; }
+.dd-name { font-size: 14px; font-weight: 500; color: var(--c-ink); }
+.dd-sub  { font-size: 11px; color: var(--c-ink4); margin-top: 1px; }
+.dd-time { font-size: 14px; font-weight: 600; color: var(--c-ink2); flex-shrink: 0; }
+
+.dd-empty {
+  padding: 20px 14px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--c-ink4);
+}
+
+/* ═══════════════════════════════════════
+   WORLD CLOCK TAB
+═══════════════════════════════════════ */
+
+.wc-add-row {
+  padding: 16px 16px 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-outline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-full);
+  color: var(--c-ink2);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-outline:hover { border-color: var(--c-accent); color: var(--c-accent); background: var(--c-accent-bg); }
+
+/* Search bar in world clock */
+.wc-search-wrap {
+  padding: 0 16px 12px;
+  position: relative;
+}
+
+.wc-search {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--c-ink);
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-lg);
+  padding: 11px 44px 11px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.wc-search:focus { border-color: var(--c-accent); }
+.wc-search::placeholder { color: var(--c-ink4); }
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 32px;
+  text-align: center;
+}
+
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.6; }
+.empty-title { font-size: 17px; font-weight: 600; color: var(--c-ink2); margin-bottom: 8px; }
+.empty-text  { font-size: 14px; color: var(--c-ink4); line-height: 1.5; margin-bottom: 24px; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  background: var(--c-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-full);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:active { transform: scale(0.97); }
+
+/* City card */
+.city-list { padding: 0 12px; }
+
+.city-card {
+  display: flex;
+  align-items: center;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  margin-bottom: 10px;
+  gap: 14px;
+  transition: all 0.15s;
+  position: relative;
+  animation: slideIn 0.3s ease;
+  cursor: pointer;
+}
+.city-card:hover { border-color: var(--c-accent); background: var(--c-accent-bg); }
+.city-card:hover .cc-time { color: var(--c-accent); }
+
+.cc-flag { font-size: 28px; flex-shrink: 0; }
+
+.cc-info { flex: 1; min-width: 0; }
+
+.cc-time-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.cc-time {
+  font-family: var(--font-time);
+  font-size: 34px;
+  font-weight: 300;
+  color: var(--c-ink);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.cc-ampm {
+  font-size: 13px;
+  color: var(--c-ink3);
+  font-weight: 400;
+}
+
+.cc-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-ink2);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cc-meta {
+  font-size: 12px;
+  color: var(--c-ink4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cc-meta-dot { color: var(--c-border2); }
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.chip-morning  { background: var(--c-amber-bg);  color: var(--c-amber); }
+.chip-afternoon{ background: var(--c-green-bg);  color: var(--c-green); }
+.chip-evening  { background: var(--c-night-bg);  color: var(--c-night); }
+.chip-night    { background: var(--c-surface2);  color: var(--c-ink4);  }
+
+[data-theme="dark"] .chip-morning   { background: #2e2008; color: #e0a030; }
+[data-theme="dark"] .chip-afternoon { background: #0a2014; color: #50c080; }
+[data-theme="dark"] .chip-evening   { background: #141030; color: #9090e0; }
+[data-theme="dark"] .chip-night     { background: #242018; color: #7a7468; }
+
+.home-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: var(--r-full);
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--c-accent-bg);
+  color: var(--c-accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cc-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  background: none;
+  border: none;
+  border-radius: var(--r-sm);
+  color: var(--c-ink4);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.cc-remove:hover { background: var(--c-red-bg); color: var(--c-red); }
+
+/* ═══════════════════════════════════════
+   CONVERTER TAB
+═══════════════════════════════════════ */
+
+.conv-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.conv-left  { display: flex; flex-direction: column; gap: 12px; }
+.conv-right { display: flex; flex-direction: column; gap: 12px; }
+
+.form-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  overflow: visible;
+}
+
+.form-row {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-border);
+  position: relative;
+}
+.form-row:last-child { border-bottom: none; }
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+  margin-bottom: 6px;
+}
+
+.form-city-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.form-city-flag { font-size: 22px; }
+.form-city-name { font-size: 17px; font-weight: 500; color: var(--c-ink); flex: 1; }
+.form-city-caret { color: var(--c-ink4); font-size: 12px; }
+
+.form-time-input {
+  font-family: var(--font-time);
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--c-ink);
+  background: none;
+  border: none;
+  outline: none;
+  width: 100%;
+  letter-spacing: -0.01em;
+  color-scheme: light dark;
+}
+.form-time-input::-webkit-calendar-picker-indicator { display: none; }
+
+.form-date-input {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--c-ink2);
+  background: none;
+  border: none;
+  outline: none;
+  width: 100%;
+  color-scheme: light dark;
+}
+
+.swap-row {
+  display: flex;
+  justify-content: center;
+  margin: -6px 0;
+  position: relative;
+  z-index: 5;
+}
+
+.swap-btn-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-full);
+  color: var(--c-ink2);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.swap-btn-main:hover { border-color: var(--c-accent); color: var(--c-accent); background: var(--c-accent-bg); }
+
+/* Quick picks */
+.quick-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+  padding: 0 16px 8px;
+}
+
+.quick-row {
+  display: flex;
+  gap: 7px;
+  padding: 0 16px;
+  flex-wrap: wrap;
+}
+
+.quick-btn {
+  padding: 7px 13px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-full);
+  color: var(--c-ink2);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.quick-btn:hover { border-color: var(--c-accent); color: var(--c-accent); background: var(--c-accent-bg); }
+.quick-btn.active { background: var(--c-accent); border-color: var(--c-accent); color: #fff; }
+
+/* Result card */
+.result-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+
+.result-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--c-border);
+  background: var(--c-surface2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+}
+
+.result-body { padding: 16px; }
+
+.result-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.result-line:last-child { margin-bottom: 0; }
+
+.result-time {
+  font-family: var(--font-time);
+  font-size: 30px;
+  font-weight: 300;
+  color: var(--c-ink);
+  letter-spacing: -0.02em;
+  min-width: 100px;
+}
+
+.result-city { font-size: 14px; color: var(--c-ink2); flex: 1; }
+
+.result-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--c-border);
+  flex-shrink: 0;
+}
+
+.delta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+.delta-same  { background: var(--c-green-bg);  color: var(--c-green); }
+.delta-next  { background: var(--c-amber-bg);  color: var(--c-amber); }
+.delta-prev  { background: var(--c-red-bg);    color: var(--c-red); }
+
+/* DST warnings */
+.dst-warning {
+  background: var(--c-amber-bg);
+  border: 1.5px solid #e0c060;
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  margin-top: 4px;
+}
+.dst-warning-title { font-size: 14px; font-weight: 600; color: var(--c-amber); margin-bottom: 4px; }
+.dst-warning-text  { font-size: 13px; color: var(--c-ink2); line-height: 1.4; margin-bottom: 10px; }
+.dst-action {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-accent);
+  background: none;
+  border: 1.5px solid var(--c-accent);
+  border-radius: var(--r-full);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.dst-action:hover { background: var(--c-accent); color: #fff; }
+
+/* Ambiguous time choice */
+.dst-choices { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.dst-choice {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 12px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-ink2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.dst-choice:hover { border-color: var(--c-accent); color: var(--c-accent); }
+.dst-choice.selected { background: var(--c-accent); border-color: var(--c-accent); color: #fff; }
+
+/* ═══════════════════════════════════════
+   MEETING PLANNER TAB
+═══════════════════════════════════════ */
+
+.mp-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.mp-help {
+  font-size: 14px;
+  color: var(--c-ink3);
+  line-height: 1.5;
+}
+
+.mp-city-list { display: flex; flex-direction: column; gap: 8px; }
+
+.mp-city-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+}
+.mp-city-flag  { font-size: 20px; }
+.mp-city-name  { font-size: 14px; font-weight: 500; color: var(--c-ink); flex: 1; }
+.mp-city-time  { font-family: var(--font-time); font-size: 18px; font-weight: 300; color: var(--c-ink2); }
+.mp-city-rm {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: none;
+  color: var(--c-ink4); font-size: 15px;
+  cursor: pointer; border-radius: var(--r-sm); transition: all 0.15s;
+}
+.mp-city-rm:hover { background: var(--c-red-bg); color: var(--c-red); }
+
+/* Slider */
+.mp-slider-wrap {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  padding: 16px;
+}
+
+.mp-slider-label {
+  font-size: 12px;
+  color: var(--c-ink4);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.mp-chosen-time {
+  font-family: var(--font-time);
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--c-accent);
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.mp-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--c-surface3);
+  outline: none;
+  margin-bottom: 6px;
+}
+.mp-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(201,106,58,0.4);
+}
+.mp-slider::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  cursor: pointer;
+  border: none;
+}
+
+.mp-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--c-ink4);
+  margin-top: 4px;
+}
+
+/* Timeline grid */
+.timeline-grid {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+
+.tg-header {
+  padding: 10px 14px;
+  background: var(--c-surface2);
+  border-bottom: 1px solid var(--c-border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+}
+
+.tg-zone {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--c-border);
+}
+.tg-zone:last-child { border-bottom: none; }
+
+.tg-zone-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.tg-zone-name { font-size: 13px; font-weight: 500; color: var(--c-ink2); }
+.tg-zone-time { font-family: var(--font-time); font-size: 16px; font-weight: 300; color: var(--c-ink); }
+
+.tg-bar {
+  position: relative;
+  height: 24px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--c-surface2);
+}
+
+.tg-seg {
+  position: absolute;
+  top: 0; bottom: 0;
+}
+/* work-hour segs are full opacity, off-hours are visually distinct */
+.tg-seg.work    { opacity: 1; }
+.tg-seg.offhour { opacity: 0.28; }
+
+/* ── Meeting quality color coding ── */
+.tg-seg.tg-q-good  { background: #4caf82 !important; opacity: 1; }
+.tg-seg.tg-q-ok    { background: #e8a838 !important; opacity: 0.85; }
+.tg-seg.tg-q-avoid { background: #e05555 !important; opacity: 0.7; }
+.tg-seg.tg-q-nogo  { background: #c0c0c0 !important; opacity: 0.25; }
+[data-theme="dark"] .tg-seg.tg-q-good  { background: #2d8a5e !important; }
+[data-theme="dark"] .tg-seg.tg-q-ok    { background: #a06820 !important; }
+[data-theme="dark"] .tg-seg.tg-q-avoid { background: #8a2828 !important; }
+
+/* Legend dots */
+.tg-legend-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 2px; vertical-align: middle;
+}
+
+/* ── Best meeting window label ── */
+.best-window-label {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 4px;
+}
+.best-window-icon { font-size: 18px; }
+.best-window-title {
+  font-size: 15px; font-weight: 700;
+  color: var(--c-ink);
+}
+.best-window-times {
+  font-size: 13px; color: var(--c-green);
+  margin-bottom: 10px; line-height: 1.6;
+}
+
+.tg-night    { background: #c8c4e0; }
+.tg-morning  { background: #f0d870; }
+.tg-afternoon{ background: #80cc98; }
+.tg-evening  { background: #b0acd8; }
+
+[data-theme="dark"] .tg-night    { background: #2a2840; }
+[data-theme="dark"] .tg-morning  { background: #2a2210; }
+[data-theme="dark"] .tg-afternoon{ background: #0e2018; }
+[data-theme="dark"] .tg-evening  { background: #1e1c30; }
+
+.tg-needle {
+  position: absolute; top: 0; bottom: 0;
+  width: 2px; background: var(--c-accent);
+  z-index: 5; transition: left 0.3s ease;
+}
+.tg-needle::before {
+  content:''; position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--c-accent);
+  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 3px var(--c-accent);
+}
+
+.tg-axis {
+  display: flex; justify-content: space-between;
+  margin-top: 4px; font-size: 9px; color: var(--c-ink4);
+}
+
+/* Overlap result */
+.overlap-card {
+  background: var(--c-green-bg);
+  border: 1.5px solid #a0d4b4;
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+}
+.overlap-title  { font-size: 14px; font-weight: 600; color: var(--c-green); margin-bottom: 4px; }
+.overlap-slots  { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.overlap-slot {
+  padding: 5px 12px;
+  background: var(--c-surface);
+  border: 1.5px solid #a0d4b4;
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-green);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.overlap-slot:hover { background: var(--c-green); color: #fff; border-color: var(--c-green); }
+
+.no-overlap-card {
+  background: var(--c-surface2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  text-align: center;
+}
+.no-overlap-title { font-size: 14px; font-weight: 600; color: var(--c-ink2); margin-bottom: 4px; }
+.no-overlap-text  { font-size: 13px; color: var(--c-ink4); line-height: 1.4; margin-bottom: 10px; }
+
+/* ═══════════════════════════════════════
+   SETTINGS SCREEN
+═══════════════════════════════════════ */
+
+.settings-screen {
+  position: fixed;
+  inset: 0; top: 0;
+  background: var(--c-bg);
+  z-index: 80;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.settings-screen.open { transform: translateX(0); }
+
+.settings-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 56px;
+  border-bottom: 1px solid var(--c-border);
+  background: var(--c-bg);
+  position: sticky; top: 0; z-index: 10;
+}
+
+.settings-title {
+  font-size: 17px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.settings-body { padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+
+.settings-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+  padding: 16px 4px 8px;
+}
+
+.settings-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-border);
+  gap: 12px;
+  min-height: 52px;
+}
+.settings-row:last-child { border-bottom: none; }
+
+.settings-row-label {
+  flex: 1;
+  font-size: 15px;
+  color: var(--c-ink);
+}
+
+.settings-row-sub {
+  font-size: 12px;
+  color: var(--c-ink4);
+  margin-top: 1px;
+}
+
+.settings-select {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--c-ink2);
+  background: var(--c-surface2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  padding: 6px 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+.settings-action {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: opacity 0.15s;
+}
+.settings-action:hover { opacity: 0.75; }
+
+.toggle-wrap {
+  display: flex;
+  gap: 6px;
+}
+
+.seg-toggle {
+  padding: 5px 10px;
+  background: var(--c-surface2);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-full);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-ink3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.seg-toggle.active { background: var(--c-accent); border-color: var(--c-accent); color: #fff; }
+
+/* ═══════════════════════════════════════
+   MODALS
+═══════════════════════════════════════ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.hidden { display: none; }
+
+.modal-sheet {
+  width: 100%; max-width: 480px;
+  background: var(--c-surface);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding: 20px;
+  animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--c-border2);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--c-ink);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.modal-text {
+  font-size: 14px;
+  color: var(--c-ink3);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.modal-actions { display: flex; gap: 10px; flex-direction: column; }
+
+.btn-danger {
+  width: 100%;
+  padding: 13px;
+  background: var(--c-red);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-lg);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-danger:hover { opacity: 0.88; }
+
+.btn-ghost {
+  width: 100%;
+  padding: 13px;
+  background: var(--c-surface2);
+  color: var(--c-ink2);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-lg);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { border-color: var(--c-ink3); }
+
+/* Share modal */
+.share-link-box {
+  background: var(--c-surface2);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--c-ink3);
+  word-break: break-all;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--c-ink);
+  color: var(--c-bg);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 22px;
+  border-radius: var(--r-full);
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+  max-width: calc(100% - 40px);
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════ */
+
+.hidden { display: none !important; }
+
+.section-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  padding: 14px 16px;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+  margin-bottom: 10px;
+}
+
+a.text-link {
+  color: var(--c-accent);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.home-change-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 12px;
+}
+
+.home-change-info { font-size: 14px; color: var(--c-ink2); }
+
+/* ═══════════════════════════════════════
+   MEETING COST — FAIRNESS FEATURE
+   Fully isolated: all classes prefixed .fc-
+═══════════════════════════════════════ */
+
+.fc-section {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+.fc-header {
+  padding: 12px 16px;
+  background: var(--c-surface2);
+  border-bottom: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.fc-header-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+}
+.fc-header-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  background: var(--c-accent-bg);
+  color: var(--c-accent);
+}
+.fc-bar-wrap {
+  padding: 14px 16px 6px;
+  border-bottom: 1px solid var(--c-border);
+}
+.fc-bar-label {
+  font-size: 11px;
+  color: var(--c-ink4);
+  margin-bottom: 7px;
+  font-weight: 500;
+}
+.fc-bar {
+  position: relative;
+  height: 32px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--c-surface2);
+  display: flex;
+  cursor: pointer;
+}
+.fc-hour {
+  flex: 1;
+  height: 100%;
+  transition: filter 0.1s;
+  position: relative;
+}
+.fc-hour:hover { filter: brightness(0.82); }
+.fc-free    { background: #5cb87a; }
+.fc-shared  { background: #e8b830; }
+.fc-unequal { background: #e07840; }
+.fc-unfair  { background: #cc4444; }
+.fc-none    { background: var(--c-surface3); }
+[data-theme="dark"] .fc-free    { background: #1e5c30; }
+[data-theme="dark"] .fc-shared  { background: #5a4008; }
+[data-theme="dark"] .fc-unequal { background: #5c2c10; }
+[data-theme="dark"] .fc-unfair  { background: #501010; }
+.fc-hour-selected::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: rgba(0,0,0,0.55);
+}
+.fc-bar-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  padding: 0 0 10px;
+  font-size: 9px;
+  color: var(--c-ink4);
+}
+.fc-legend {
+  display: flex;
+  gap: 12px;
+  padding: 10px 16px 12px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--c-border);
+}
+.fc-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--c-ink3);
+}
+.fc-legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.fc-verdict {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--c-border);
+  transition: background 0.2s;
+}
+.fc-verdict-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.fc-verdict-icon { font-size: 22px; flex-shrink: 0; line-height: 1; }
+.fc-verdict-title { font-size: 15px; font-weight: 600; color: var(--c-ink); letter-spacing: -0.01em; }
+.fc-verdict-body { font-size: 13px; color: var(--c-ink3); line-height: 1.55; }
+.fc-persons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+.fc-person-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px 6px 8px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1.5px solid transparent;
+}
+.fc-pill-free    { background: #eef8f2; border-color: #90d0a8; color: #1a5c30; }
+.fc-pill-mild    { background: #fdf8e4; border-color: #d8c040; color: #6a5000; }
+.fc-pill-painful { background: #fff0e4; border-color: #e89050; color: #7a3010; }
+.fc-pill-bad     { background: #fdf0f0; border-color: #e08080; color: #8a2020; }
+[data-theme="dark"] .fc-pill-free    { background: #081a0e; border-color: #1e5030; color: #50b870; }
+[data-theme="dark"] .fc-pill-mild    { background: #181400; border-color: #504000; color: #b08020; }
+[data-theme="dark"] .fc-pill-painful { background: #180c04; border-color: #602808; color: #d07030; }
+[data-theme="dark"] .fc-pill-bad     { background: #180404; border-color: #601010; color: #d04040; }
+.fc-pill-cost { font-size: 10px; opacity: 0.7; font-weight: 400; margin-left: 1px; }
+.fc-share-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 13px;
+}
+.fc-share-text {
+  flex: 1;
+  font-size: 12px;
+  color: var(--c-ink4);
+  font-style: italic;
+  line-height: 1.4;
+}
+.fc-copy-btn {
+  flex-shrink: 0;
+  padding: 6px 13px;
+  background: var(--c-surface2);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-full);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-ink2);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.fc-copy-btn:hover { border-color: var(--c-accent); color: var(--c-accent); background: var(--c-accent-bg); }
+/* ═══════════════════════════════════════
+   MEETING PLANNER — REACTIVE ANIMATIONS
+   All lightweight CSS, no layout shift
+═══════════════════════════════════════ */
+
+/* Monospace time values in meeting planner */
+.mp-chosen-time,
+.mp-city-time,
+.tg-zone-time {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Blinking colon in chosen time display */
+@keyframes mp-colon-blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100% { opacity: 0.25; }
+}
+.mp-colon {
+  display: inline-block;
+  animation: mp-colon-blink 1s step-start infinite;
+}
+
+/* Smooth time number transition */
+.mp-chosen-time {
+  transition: color 0.15s ease;
+}
+
+/* Overlap card — pulse glow on appearance */
+@keyframes mp-overlap-appear {
+  0%   { box-shadow: 0 0 0 0 rgba(60,180,100,0); opacity: 0.7; }
+  40%  { box-shadow: 0 0 0 6px rgba(60,180,100,0.18); }
+  100% { box-shadow: 0 0 0 0 rgba(60,180,100,0); opacity: 1; }
+}
+.overlap-card {
+  animation: mp-overlap-appear 0.6s ease-out forwards;
+  transition: box-shadow 0.2s ease;
+}
+[data-theme="dark"] .overlap-card {
+  animation: none; /* dark bg absorbs glow, skip it */
+}
+
+/* Active overlap slot — slider is ON this hour */
+.overlap-slot.is-active {
+  background: var(--c-green);
+  color: #fff;
+  border-color: var(--c-green);
+  font-size: 14px;          /* slightly larger than resting 13px */
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(58,122,84,0.30);
+  transform: translateY(-1px);
+}
+
+/* Timeline overlap band — hours where all cities are in working hours */
+.tg-seg.overlap-band::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(80,200,120,0.22);
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+[data-theme="dark"] .tg-seg.overlap-band::after {
+  background: rgba(30,92,48,0.45);
+}
+
+/* Timeline needle — enhanced transition */
+.tg-needle {
+  transition: left 0.18s cubic-bezier(0.25,0.46,0.45,0.94) !important;
+}
+
+/* Timeline off-hour dimming — reactive to overlap analysis */
+.tg-zone[data-has-overlap="true"] .tg-seg.offhour:not(.overlap-band) {
+  opacity: 0.15;
+  transition: opacity 0.2s ease;
+}
+
+/* Fairness verdict — smooth content transition */
+.fc-verdict {
+  transition: background 0.22s ease, opacity 0.15s ease !important;
+}
+.fc-verdict.fc-fading {
+  opacity: 0.35;
+  transition: opacity 0.08s ease !important;
+}
+
+/* FC bar selected marker — smoother appearance */
+.fc-hour {
+  transition: filter 0.12s ease, transform 0.12s ease;
+}
+.fc-hour-selected {
+  transform: scaleY(1.08);
+  transform-origin: bottom;
+  z-index: 2;
+}
+.fc-hour-selected::after {
+  height: 3px;
+  background: rgba(0,0,0,0.6);
+  transition: none;
+}
+
+/* Helper line above fairness card */
+.fc-helper-line {
+  font-size: 12px;
+  color: var(--c-ink4);
+  text-align: center;
+  padding: 0 4px 2px;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
+}
+
+/* Copy meeting time button — primary action style */
+.fc-copy-btn {
+  padding: 8px 16px;
+  background: var(--c-surface2);
+  border: 1.5px solid var(--c-border2);
+  border-radius: var(--r-full);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-ink);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.fc-copy-btn:hover {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+  background: var(--c-accent-bg);
+}
+/* Copied success state */
+@keyframes mp-copy-flash {
+  0%   { transform: scale(0.96); }
+  50%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+.fc-copy-btn.copied {
+  background: var(--c-green-bg);
+  border-color: #80c898;
+  color: var(--c-green);
+  animation: mp-copy-flash 0.25s ease-out forwards;
+}
+
+/* ═══════════════════════════════════════
+   GUIDE INTEGRATION
+   Three placements, fully isolated.
+   All classes prefixed .gi-
+═══════════════════════════════════════ */
+
+/* A — Contextual guide hint (after converter result) */
+.gi-hint {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px;
+  margin-top: 2px;
+  border-top: 1px solid var(--c-border);
+  animation: slideIn 0.2s ease-out;
+}
+.gi-hint-text {
+  font-size: 12px;
+  color: var(--c-ink4);
+  line-height: 1.4;
+  flex: 1;
+}
+.gi-hint-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-ink3);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color 0.15s;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+}
+.gi-hint-link:hover {
+  color: var(--c-accent);
+  border-bottom-color: var(--c-accent-lt);
+}
+
+/* B — Common Business Corridors (below converter) */
+.gi-corridors {
+  padding: 20px 16px 4px;
+}
+.gi-corridors-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-ink4);
+  margin-bottom: 12px;
+}
+.gi-corridor-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--c-border);
+  text-decoration: none;
+  transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.gi-corridor-row:last-child { border-bottom: none; }
+.gi-corridor-row:hover { opacity: 0.65; }
+.gi-corridor-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-ink);
+}
+.gi-corridor-desc {
+  font-size: 11px;
+  color: var(--c-ink4);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* C — Empty state discovery hint */
+.gi-discovery {
+  padding: 20px 16px 0;
+  border-top: 1px solid var(--c-border);
+  margin-top: 8px;
+}
+.gi-discovery-label {
+  font-size: 12px;
+  color: var(--c-ink4);
+  margin-bottom: 10px;
+}
+.gi-discovery-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.gi-discovery-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-ink3);
+  text-decoration: none;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--c-border);
+  transition: color 0.15s;
+}
+.gi-discovery-link:last-child { border-bottom: none; }
+.gi-discovery-link:hover { color: var(--c-ink); }
+
+/* Sidebar footer and desktop nav — hidden on mobile, shown via media query */
+.sidebar-footer { display: none; }
+.topbar-desktop-nav { display: none; }
+
+/* ═══════════════════════════════════════════════════════
+   DESKTOP LAYOUT  ≥ 900px
+   Mobile layout is completely untouched below this.
+   All changes are additive via media queries only.
+═══════════════════════════════════════════════════════ */
+@media (min-width: 900px) {
+
+  /* ── Shell: wider, centered, no overflow clip ── */
+  body {
+    max-width: 100%;
+    overflow-x: unset;
+    background: var(--c-bg);
+  }
+
+  .app-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 64px 1fr;
+    grid-template-areas:
+      "topbar  topbar"
+      "sidebar content";
+    position: relative;
+  }
+
+  /* ── Topbar: full width, taller, add guides link ── */
+  .topbar {
+    grid-area: topbar;
+    height: 64px;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--c-border);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+
+  /* Add Guides nav link in topbar via CSS — injected via JS below */
+  .topbar-desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 24px;
+  }  .topbar-desktop-nav a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--c-ink3);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: var(--r-sm);
+    transition: all 0.15s;
+  }
+  .topbar-desktop-nav a:hover { color: var(--c-ink); background: var(--c-surface2); }
+
+  /* ── Sidebar: replaces bottom nav ── */
+  .bottom-nav {
+    grid-area: sidebar;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    width: 200px;
+    bottom: unset;
+    left: unset;
+    transform: none;
+    max-width: none;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    border-top: none;
+    border-right: 1px solid var(--c-border);
+    background: var(--c-surface);
+    padding: 16px 10px;
+    gap: 2px;
+  }
+
+  .nav-tab {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--r-md);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-align: left;
+  }
+  .nav-tab .nav-icon { font-size: 17px; }
+  .nav-tab.active { background: var(--c-accent-bg); color: var(--c-accent); }
+  .nav-tab.active .nav-icon { transform: none; }
+
+  /* Sidebar footer — theme toggle + settings */
+  .sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--c-border);
+  }
+  .sidebar-footer-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: var(--r-md);
+    border: none;
+    background: none;
+    color: var(--c-ink3);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    width: 100%;
+    text-decoration: none;
+  }
+  .sidebar-footer-btn:hover { color: var(--c-ink); background: var(--c-surface2); }
+
+  /* Hide topbar icons on desktop — moved to sidebar footer */
+  .topbar-right .icon-btn { display: none; }
+  .sidebar-footer { display: flex; }
+
+  /* ── Page content area ── */
+  .page-content {
+    grid-area: content;
+    padding: 0 0 40px;
+    overflow-y: auto;
+    max-height: calc(100vh - 64px);
+  }
+
+  /* ── World Clock tab: 2-column card grid ── */
+  .wc-add-row {
+    padding: 20px 24px 12px;
+  }
+
+  .city-list {
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .city-card {
+    margin-bottom: 0;
+  }
+
+  /* ── Converter tab: two-column layout ── */
+  .conv-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 24px;
+    align-items: start;
+  }
+
+  .conv-left  { display: flex; flex-direction: column; gap: 12px; }
+  .conv-right { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Bigger result time on desktop */
+  .result-time { font-size: 38px; }
+
+  /* ── Meeting Planner tab: two-column ── */
+  .mp-body {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 16px;
+    padding: 24px;
+    align-items: start;
+  }
+
+  .mp-help           { grid-column: 1 / -1; }
+  .mp-city-list      { grid-column: 1; grid-row: 2; }
+  .mp-slider-wrap    { grid-column: 1; grid-row: 3; }
+  .timeline-grid     { grid-column: 2; grid-row: 2 / 6; }
+  .overlap-card,
+  .no-overlap-card   { grid-column: 1; grid-row: 4; }
+  .fc-section        { grid-column: 1 / -1; grid-row: 5; margin-top: 4px; }
+
+  /* Timeline wider on desktop */
+  .tg-bar { height: 32px; }
+
+  /* ── Empty states: center + wider ── */
+  .empty-state {
+    padding: 60px 24px;
+  }
+
+  /* ── Settings screen: constrained width ── */
+  .settings-screen {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .settings-topbar {
+    max-width: 1100px;
+  }
+  .settings-body {
+    padding: 24px 28px;
+    max-width: 600px;
+  }
+
+  /* ── Onboarding: wider card ── */
+  .onboarding-screen {
+    padding: 60px 40px;
+  }
+  .ob-preview { max-width: 480px; }
+  .ob-screen-inner {
+    max-width: 480px;
+    width: 100%;
+  }
+  .ob-btn-row { max-width: 360px; margin: 0 auto; }
+
+  /* ── gi corridors below converter ── */
+  .gi-corridors { padding: 0 24px 24px; }
+}
+
+/* ── Extra wide: more breathing room ── */
+@media (min-width: 1280px) {
+  .app-shell {
+    max-width: 1280px;
+    grid-template-columns: 220px 1fr;
+  }
+  .bottom-nav { width: 220px; }
+  .mp-body {
+    grid-template-columns: 300px 1fr;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     ONBOARDING
+═══════════════════════════════════ -->
+<div class="onboarding-screen" id="onboarding">
+  <!-- World Hour logo — light mode -->
+  <svg class="ob-logo ob-logo-light" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="140" height="140" fill="none" aria-label="World Hour" role="img">
+    <defs>
+      <linearGradient id="wh-arc-l" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#2563EB"/>
+        <stop offset="100%" stop-color="#1D4ED8"/>
+      </linearGradient>
+    </defs>
+    <circle cx="40" cy="40" r="34" stroke="#0B1220" stroke-width="1" fill="none" opacity="0.10"/>
+    <line x1="40" y1="6"  x2="40" y2="12"  stroke="#0B1220" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
+    <line x1="74" y1="40" x2="68" y2="40"  stroke="#0B1220" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
+    <line x1="40" y1="74" x2="40" y2="68"  stroke="#0B1220" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
+    <line x1="6"  y1="40" x2="12" y2="40"  stroke="#0B1220" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/>
+    <line x1="48.80" y1="7.16"  x2="47.76" y2="11.02" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="57.00" y1="10.56" x2="55.00" y2="14.02" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="64.04" y1="15.96" x2="61.21" y2="18.79" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="69.44" y1="23.00" x2="65.98" y2="25.00" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="72.84" y1="31.20" x2="68.98" y2="32.24" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="72.84" y1="48.80" x2="68.98" y2="47.76" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="69.44" y1="57.00" x2="65.98" y2="55.00" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="64.04" y1="64.04" x2="61.21" y2="61.21" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="57.00" y1="69.44" x2="55.00" y2="65.98" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="48.80" y1="72.84" x2="47.76" y2="68.98" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="31.20" y1="72.84" x2="32.24" y2="68.98" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="23.00" y1="69.44" x2="25.00" y2="65.98" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="15.96" y1="64.04" x2="18.79" y2="61.21" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="10.56" y1="57.00" x2="14.02" y2="55.00" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="7.16"  y1="48.80" x2="11.02" y2="47.76" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="7.16"  y1="31.20" x2="11.02" y2="32.24" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="10.56" y1="23.00" x2="14.02" y2="25.00" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="15.96" y1="15.96" x2="18.79" y2="18.79" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="23.00" y1="10.56" x2="25.00" y2="14.02" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <line x1="31.20" y1="7.16"  x2="32.24" y2="11.02" stroke="#0B1220" stroke-width="0.9" stroke-linecap="round" opacity="0.28"/>
+    <ellipse cx="40" cy="40" rx="11" ry="25" stroke="#0B1220" stroke-width="1" fill="none" opacity="0.11" transform="rotate(18 40 40)"/>
+    <line x1="6" y1="40" x2="74" y2="40" stroke="#0B1220" stroke-width="0.8" opacity="0.09" stroke-linecap="round"/>
+    <circle cx="40" cy="40" r="27" stroke="url(#wh-arc-l)" stroke-width="3.2" fill="none" stroke-dasharray="141.372 28.274" stroke-dashoffset="-42.412" stroke-linecap="round"/>
+    <line x1="40" y1="40" x2="30.81" y2="32.29" stroke="#0B1220" stroke-width="2.4" stroke-linecap="round" opacity="0.82"/>
+    <line x1="40" y1="40" x2="55.59" y2="49.00" stroke="url(#wh-arc-l)" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="40" cy="40" r="2.8" fill="#2563EB"/>
+    <circle cx="40" cy="40" r="1.3" fill="#0B1220"/>
+  </svg>
+
+  <!-- World Hour logo — dark mode -->
+  <svg class="ob-logo ob-logo-dark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="140" height="140" fill="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="wh-arc-d" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#60A5FA"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+    </defs>
+    <circle cx="40" cy="40" r="34" stroke="white" stroke-width="1" fill="none" opacity="0.08"/>
+    <line x1="40" y1="6"  x2="40" y2="12"  stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.50"/>
+    <line x1="74" y1="40" x2="68" y2="40"  stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.50"/>
+    <line x1="40" y1="74" x2="40" y2="68"  stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.50"/>
+    <line x1="6"  y1="40" x2="12" y2="40"  stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.50"/>
+    <line x1="48.80" y1="7.16"  x2="47.76" y2="11.02" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="57.00" y1="10.56" x2="55.00" y2="14.02" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="64.04" y1="15.96" x2="61.21" y2="18.79" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="69.44" y1="23.00" x2="65.98" y2="25.00" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="72.84" y1="31.20" x2="68.98" y2="32.24" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="72.84" y1="48.80" x2="68.98" y2="47.76" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="69.44" y1="57.00" x2="65.98" y2="55.00" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="64.04" y1="64.04" x2="61.21" y2="61.21" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="57.00" y1="69.44" x2="55.00" y2="65.98" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="48.80" y1="72.84" x2="47.76" y2="68.98" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="31.20" y1="72.84" x2="32.24" y2="68.98" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="23.00" y1="69.44" x2="25.00" y2="65.98" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="15.96" y1="64.04" x2="18.79" y2="61.21" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="10.56" y1="57.00" x2="14.02" y2="55.00" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="7.16"  y1="48.80" x2="11.02" y2="47.76" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="7.16"  y1="31.20" x2="11.02" y2="32.24" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="10.56" y1="23.00" x2="14.02" y2="25.00" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="15.96" y1="15.96" x2="18.79" y2="18.79" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="23.00" y1="10.56" x2="25.00" y2="14.02" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <line x1="31.20" y1="7.16"  x2="32.24" y2="11.02" stroke="white" stroke-width="0.9" stroke-linecap="round" opacity="0.22"/>
+    <ellipse cx="40" cy="40" rx="11" ry="25" stroke="white" stroke-width="1" fill="none" opacity="0.09" transform="rotate(18 40 40)"/>
+    <line x1="6" y1="40" x2="74" y2="40" stroke="white" stroke-width="0.8" opacity="0.07" stroke-linecap="round"/>
+    <circle cx="40" cy="40" r="27" stroke="url(#wh-arc-d)" stroke-width="3.2" fill="none" stroke-dasharray="141.372 28.274" stroke-dashoffset="-42.412" stroke-linecap="round"/>
+    <line x1="40" y1="40" x2="30.81" y2="32.29" stroke="white" stroke-width="2.4" stroke-linecap="round" opacity="0.85"/>
+    <line x1="40" y1="40" x2="55.59" y2="49.00" stroke="url(#wh-arc-d)" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="40" cy="40" r="2.8" fill="#60A5FA"/>
+    <circle cx="40" cy="40" r="1.3" fill="#0B1220"/>
+  </svg>
+  <h1 class="ob-title">Find the time that works for everyone.</h1>
+  <p class="ob-text">Add your cities. See the overlap. Book the meeting.</p>
+
+  <!-- Live time preview — updates every minute via obStartClock() -->
+  <div class="ob-preview" aria-live="polite" aria-label="Current times around the world">
+    <div class="ob-preview-utc">
+      <span class="ob-preview-utc-label">UTC</span>
+      <!-- Three child nodes: hours text, colon span, minutes text — never replaced -->
+      <span id="obPreviewUtc"><span class="ob-u-h">—</span><span class="ob-colon" aria-hidden="true">:</span><span class="ob-u-m">—</span></span>
+    </div>
+    <div class="ob-preview-cities">
+      <div class="ob-preview-item">
+        <span class="ob-preview-city">New York</span>
+        <span class="ob-preview-time" id="obPreviewNY"><span class="ob-d-h">—</span><span class="ob-colon" aria-hidden="true">:</span><span class="ob-d-m">—</span></span>
+      </div>
+      <div class="ob-preview-item">
+        <span class="ob-preview-city">London</span>
+        <span class="ob-preview-time" id="obPreviewLon"><span class="ob-d-h">—</span><span class="ob-colon" aria-hidden="true">:</span><span class="ob-d-m">—</span></span>
+      </div>
+      <div class="ob-preview-item">
+        <span class="ob-preview-city">Tokyo</span>
+        <span class="ob-preview-time" id="obPreviewTok"><span class="ob-d-h">—</span><span class="ob-colon" aria-hidden="true">:</span><span class="ob-d-m">—</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ob-search-wrap" id="obSearchWrap">
+    <input
+      id="obSearch"
+      type="text"
+      class="ob-search"
+      placeholder="Search city, country or UTC offset"
+      autocomplete="off"
+      spellcheck="false"
+      aria-label="Search for your home city"
+    >
+    <span class="ob-search-icon">🔍</span>
+    <div class="search-dropdown" id="obDropdown"></div>
+  </div>
+
+  <div class="ob-selected hidden" id="obSelected">
+    <span class="ob-selected-flag" id="obSelFlag"></span>
+    <div style="flex:1;">
+      <div class="ob-selected-name" id="obSelName"></div>
+      <div class="ob-selected-tz" id="obSelTZ"></div>
+    </div>
+    <span class="ob-sel-time" id="obSelTime" aria-label="Current time"></span>
+  </div>
+
+  <button class="ob-btn-primary" id="obSaveBtn" disabled onclick="saveHome()">Find your overlap →</button>
+  <button class="ob-btn-secondary" onclick="skipOnboarding()">Skip for now</button>
+</div>
+
+<!-- ═══════════════════════════════════
+     APP SHELL
+═══════════════════════════════════ -->
+<div class="app-shell hidden" id="appShell">
+
+  <!-- Visually-hidden h1 for SEO — Google indexes this; sighted users see the topbar wordmark -->
+  <h1 class="sr-only">World Hour — Compare time zones, plan meetings and convert times across cities</h1>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo" aria-label="World Hour">
+      <!-- Topbar icon — 28×28, light/dark via CSS class toggle -->
+      <svg class="topbar-logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="wh-tb-l" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#2563EB"/>
+            <stop offset="100%" stop-color="#1D4ED8"/>
+          </linearGradient>
+          <linearGradient id="wh-tb-d" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#60A5FA"/>
+            <stop offset="100%" stop-color="#3B82F6"/>
+          </linearGradient>
+        </defs>
+        <!-- Bezel -->
+        <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.15"/>
+        <!-- 4 major ticks -->
+        <line x1="14" y1="2"  x2="14" y2="4.8"  stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+        <line x1="26" y1="14" x2="23.2" y2="14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+        <line x1="14" y1="26" x2="14" y2="23.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+        <line x1="2"  y1="14" x2="4.8" y2="14"  stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+        <!-- Globe ellipse -->
+        <ellipse cx="14" cy="14" rx="4" ry="9" stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.14" transform="rotate(18 14 14)"/>
+        <!-- 24h arc — light -->
+        <circle class="tb-light-only" cx="14" cy="14" r="9.5"
+          stroke="url(#wh-tb-l)" stroke-width="2" fill="none"
+          stroke-dasharray="49.74 9.95" stroke-dashoffset="-14.92" stroke-linecap="round"/>
+        <!-- 24h arc — dark -->
+        <circle class="tb-dark-only" cx="14" cy="14" r="9.5"
+          stroke="url(#wh-tb-d)" stroke-width="2" fill="none"
+          stroke-dasharray="49.74 9.95" stroke-dashoffset="-14.92" stroke-linecap="round"/>
+        <!-- Hour hand -->
+        <line x1="14" y1="14" x2="10.78" y2="11.30" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.82"/>
+        <!-- Minute hand — light -->
+        <line class="tb-light-only" x1="14" y1="14" x2="19.46" y2="17.15" stroke="url(#wh-tb-l)" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- Minute hand — dark -->
+        <line class="tb-dark-only"  x1="14" y1="14" x2="19.46" y2="17.15" stroke="url(#wh-tb-d)" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- Pivot — light -->
+        <circle class="tb-light-only" cx="14" cy="14" r="1.4" fill="#2563EB"/>
+        <!-- Pivot — dark -->
+        <circle class="tb-dark-only"  cx="14" cy="14" r="1.4" fill="#60A5FA"/>
+        <circle cx="14" cy="14" r="0.7" fill="currentColor"/>
+      </svg>
+      <!-- Wordmark -->
+      <div class="topbar-logo-wordmark">
+        <span class="topbar-logo-world">World</span>
+        <span class="topbar-logo-hour">Hour</span>
+        <span class="topbar-tab-label" id="topbarTitle"></span>
+      </div>
+    </div>
+    <nav class="topbar-desktop-nav" aria-label="Site navigation">
+      <a href="/guides.html">Guides</a>
+    </nav>
+    <div class="topbar-right">
+      <button class="icon-btn" onclick="openShare()" aria-label="Share" title="Share">⤤</button>
+      <button class="icon-btn" onclick="openSettings()" aria-label="Settings" title="Settings">⚙</button>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="page-content" id="pageContent"></div>
+
+  <!-- Bottom nav (mobile) / Sidebar (desktop) -->
+  <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+    <button class="nav-tab active" id="navClock" onclick="switchTab('clock')" aria-label="World Clock">
+      <span class="nav-icon">🕐</span>World Clock
+    </button>
+    <button class="nav-tab" id="navConv" onclick="switchTab('converter')" aria-label="Converter">
+      <span class="nav-icon">⇄</span>Converter
+    </button>
+    <button class="nav-tab" id="navMeet" onclick="switchTab('meeting')" aria-label="Find Overlap">
+      <span class="nav-icon">📅</span>Find Overlap
+    </button>
+    <!-- Desktop sidebar footer -->
+    <div class="sidebar-footer">
+      <a href="/guides.html" class="sidebar-footer-btn">🗺 Guides</a>
+      <button class="sidebar-footer-btn" onclick="openShare()">⤤ Share</button>
+      <button class="sidebar-footer-btn" onclick="openSettings()">⚙ Settings</button>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════
+     SETTINGS SLIDE-IN
+═══════════════════════════════════ -->
+<div class="settings-screen" id="settingsScreen" role="dialog" aria-label="Settings">
+  <div class="settings-topbar">
+    <button class="icon-btn" onclick="closeSettings()" aria-label="Go back">←</button>
+    <span class="settings-title">Settings</span>
+  </div>
+  <div class="settings-body">
+
+    <div class="settings-section-title">Home location</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label" id="settingsHomeName">Not set</div>
+          <div class="settings-row-sub">Your reference timezone</div>
+        </div>
+        <button class="settings-action" onclick="changeHomeFromSettings()">Change home</button>
+      </div>
+    </div>
+
+    <div class="settings-section-title">Time format</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-label">Clock format</div>
+        <select class="settings-select" id="settingsFmt" onchange="saveSetting('fmt', this.value)">
+          <option value="auto">Automatic</option>
+          <option value="24">24-hour</option>
+          <option value="12">12-hour</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section-title">Theme</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-label">Appearance</div>
+        <select class="settings-select" id="settingsTheme" onchange="saveSetting('theme', this.value); applyTheme()">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section-title">Day segments</div>
+    <div class="settings-card">
+      <div class="settings-row" style="flex-direction:column; align-items:flex-start; gap:10px;">
+        <div>
+          <div class="settings-row-label">Segment boundaries</div>
+          <div class="settings-row-sub">Adjust how we label Night / Morning / Afternoon / Evening</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%;">
+          <div>
+            <div style="font-size:11px;color:var(--c-ink4);margin-bottom:4px;">Morning starts</div>
+            <select class="settings-select" style="width:100%" id="setMorning" onchange="saveSetting('morning', this.value)">
+              <option value="5">5:00</option><option value="6">6:00</option><option value="7">7:00</option><option value="8">8:00</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--c-ink4);margin-bottom:4px;">Afternoon starts</div>
+            <select class="settings-select" style="width:100%" id="setAfternoon" onchange="saveSetting('afternoon', this.value)">
+              <option value="12">12:00</option><option value="13">13:00</option><option value="14">14:00</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--c-ink4);margin-bottom:4px;">Evening starts</div>
+            <select class="settings-select" style="width:100%" id="setEvening" onchange="saveSetting('evening', this.value)">
+              <option value="17">17:00</option><option value="18">18:00</option><option value="19">19:00</option><option value="20">20:00</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--c-ink4);margin-bottom:4px;">Night starts</div>
+            <select class="settings-select" style="width:100%" id="setNight" onchange="saveSetting('night', this.value)">
+              <option value="21">21:00</option><option value="22">22:00</option><option value="23">23:00</option><option value="0">0:00</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section-title">Working hours</div>
+    <div class="settings-card">
+      <div class="settings-row" style="flex-direction:column; align-items:flex-start; gap:10px;">
+        <div>
+          <div class="settings-row-label">Default working hours</div>
+          <div class="settings-row-sub">Used to highlight good meeting windows.</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; width:100%;">
+          <select class="settings-select" id="setWorkStart" onchange="saveSetting('workStart', this.value)">
+            <option value="8">08:00</option><option value="9" selected>09:00</option><option value="10">10:00</option>
+          </select>
+          <span style="color:var(--c-ink4); font-size:14px;">to</span>
+          <select class="settings-select" id="setWorkEnd" onchange="saveSetting('workEnd', this.value)">
+            <option value="16">16:00</option><option value="17" selected>17:00</option><option value="18">18:00</option><option value="19">19:00</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section-title">Language</div>
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-label">Language</div>
+        <div style="font-size:14px; color:var(--c-ink4);">English <span style="font-size:11px;">(More coming soon)</span></div>
+      </div>
+    </div>
+
+    <div style="height:32px;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MODALS
+═══════════════════════════════════ -->
+
+<!-- Remove city confirm -->
+<div class="modal-overlay hidden" id="removeModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="removeModalTitle">Remove city?</div>
+    <div class="modal-text" id="removeModalText">You can add it again anytime.</div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="removeConfirmBtn">Remove</button>
+      <button class="btn-ghost" onclick="closeModal('removeModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share modal -->
+<div class="modal-overlay hidden" id="shareModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Share this view</div>
+    <div class="modal-text">Anyone with the link will see the same cities and time.</div>
+    <div class="share-link-box" id="shareLinkBox">—</div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="copyShareLink()">Copy link</button>
+      <button class="btn-ghost" onclick="closeModal('shareModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- City picker (shared modal) -->
+<div class="modal-overlay hidden" id="cityPickModal">
+  <div class="modal-sheet" style="padding-bottom: 32px;">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="cityPickTitle">Add city</div>
+    <div style="position:relative; margin-bottom:6px;">
+      <input
+        id="cityPickSearch"
+        type="text"
+        class="wc-search"
+        style="margin:0;"
+        placeholder="Search city or time zone"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Search for a city"
+      >
+      <div class="search-dropdown open" id="cityPickDropdown" style="position:relative; top:auto; left:auto; right:auto; margin-top:8px; box-shadow:none; border-radius:var(--r-lg);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+const { DateTime, IANAZone } = luxon;
+
+/* ═══════════════════════════════════
+   CITY DATABASE
+═══════════════════════════════════ */
+const CITIES = [
+  // Americas
+  {f:'🇺🇸',n:'New York',      c:'United States',  tz:'America/New_York',     a:['nyc','ny']},
+  {f:'🇺🇸',n:'Los Angeles',   c:'United States',  tz:'America/Los_Angeles',  a:['la','lax']},
+  {f:'🇺🇸',n:'Chicago',       c:'United States',  tz:'America/Chicago',      a:[]},
+  {f:'🇺🇸',n:'Denver',        c:'United States',  tz:'America/Denver',       a:[]},
+  {f:'🇺🇸',n:'Phoenix',       c:'United States',  tz:'America/Phoenix',      a:[]},
+  {f:'🇺🇸',n:'Seattle',       c:'United States',  tz:'America/Los_Angeles',  a:[]},
+  {f:'🇺🇸',n:'Miami',         c:'United States',  tz:'America/New_York',     a:[]},
+  {f:'🇺🇸',n:'San Francisco', c:'United States',  tz:'America/Los_Angeles',  a:['sf','sfo']},
+  {f:'🇨🇦',n:'Toronto',       c:'Canada',         tz:'America/Toronto',      a:[]},
+  {f:'🇨🇦',n:'Vancouver',     c:'Canada',         tz:'America/Vancouver',    a:[]},
+  {f:'🇲🇽',n:'Mexico City',   c:'Mexico',         tz:'America/Mexico_City',  a:[]},
+  {f:'🇧🇷',n:'São Paulo',     c:'Brazil',         tz:'America/Sao_Paulo',    a:['sao paulo']},
+  {f:'🇧🇷',n:'Rio de Janeiro',c:'Brazil',         tz:'America/Sao_Paulo',    a:['rio']},
+  {f:'🇦🇷',n:'Buenos Aires',  c:'Argentina',      tz:'America/Argentina/Buenos_Aires', a:[]},
+  {f:'🇨🇴',n:'Bogotá',        c:'Colombia',       tz:'America/Bogota',       a:['bogota']},
+  {f:'🇵🇪',n:'Lima',          c:'Peru',           tz:'America/Lima',         a:[]},
+  {f:'🇨🇱',n:'Santiago',      c:'Chile',          tz:'America/Santiago',     a:[]},
+  // Europe
+  {f:'🇬🇧',n:'London',        c:'United Kingdom', tz:'Europe/London',        a:['uk']},
+  {f:'🇫🇷',n:'Paris',         c:'France',         tz:'Europe/Paris',         a:[]},
+  {f:'🇩🇪',n:'Berlin',        c:'Germany',        tz:'Europe/Berlin',        a:[]},
+  {f:'🇩🇪',n:'Frankfurt',     c:'Germany',        tz:'Europe/Berlin',        a:[]},
+  {f:'🇳🇱',n:'Amsterdam',     c:'Netherlands',    tz:'Europe/Amsterdam',     a:[]},
+  {f:'🇧🇪',n:'Brussels',      c:'Belgium',        tz:'Europe/Brussels',      a:[]},
+  {f:'🇨🇭',n:'Zürich',        c:'Switzerland',    tz:'Europe/Zurich',        a:['zurich']},
+  {f:'🇮🇹',n:'Rome',          c:'Italy',          tz:'Europe/Rome',          a:[]},
+  {f:'🇮🇹',n:'Milan',         c:'Italy',          tz:'Europe/Rome',          a:[]},
+  {f:'🇪🇸',n:'Madrid',        c:'Spain',          tz:'Europe/Madrid',        a:[]},
+  {f:'🇵🇹',n:'Lisbon',        c:'Portugal',       tz:'Europe/Lisbon',        a:['lisboa']},
+  {f:'🇸🇪',n:'Stockholm',     c:'Sweden',         tz:'Europe/Stockholm',     a:['sthlm']},
+  {f:'🇳🇴',n:'Oslo',          c:'Norway',         tz:'Europe/Oslo',          a:[]},
+  {f:'🇩🇰',n:'Copenhagen',    c:'Denmark',        tz:'Europe/Copenhagen',    a:['cph']},
+  {f:'🇫🇮',n:'Helsinki',      c:'Finland',        tz:'Europe/Helsinki',      a:[]},
+  {f:'🇵🇱',n:'Warsaw',        c:'Poland',         tz:'Europe/Warsaw',        a:['warszawa']},
+  {f:'🇨🇿',n:'Prague',        c:'Czech Republic', tz:'Europe/Prague',        a:[]},
+  {f:'🇦🇹',n:'Vienna',        c:'Austria',        tz:'Europe/Vienna',        a:['wien']},
+  {f:'🇭🇺',n:'Budapest',      c:'Hungary',        tz:'Europe/Budapest',      a:[]},
+  {f:'🇷🇴',n:'Bucharest',     c:'Romania',        tz:'Europe/Bucharest',     a:[]},
+  {f:'🇬🇷',n:'Athens',        c:'Greece',         tz:'Europe/Athens',        a:[]},
+  {f:'🇹🇷',n:'Istanbul',      c:'Turkey',         tz:'Europe/Istanbul',      a:[]},
+  {f:'🇷🇺',n:'Moscow',        c:'Russia',         tz:'Europe/Moscow',        a:[]},
+  {f:'🇷🇺',n:'St. Petersburg',c:'Russia',         tz:'Europe/Moscow',        a:[]},
+  {f:'🇺🇦',n:'Kyiv',          c:'Ukraine',        tz:'Europe/Kiev',          a:['kiev']},
+  // Africa & Middle East
+  {f:'🇦🇪',n:'Dubai',         c:'UAE',            tz:'Asia/Dubai',           a:[]},
+  {f:'🇸🇦',n:'Riyadh',        c:'Saudi Arabia',   tz:'Asia/Riyadh',          a:[]},
+  {f:'🇮🇱',n:'Tel Aviv',      c:'Israel',         tz:'Asia/Jerusalem',       a:[]},
+  {f:'🇶🇦',n:'Doha',          c:'Qatar',          tz:'Asia/Qatar',           a:[]},
+  {f:'🇪🇬',n:'Cairo',         c:'Egypt',          tz:'Africa/Cairo',         a:[]},
+  {f:'🇳🇬',n:'Lagos',         c:'Nigeria',        tz:'Africa/Lagos',         a:[]},
+  {f:'🇰🇪',n:'Nairobi',       c:'Kenya',          tz:'Africa/Nairobi',       a:[]},
+  {f:'🇿🇦',n:'Johannesburg',  c:'South Africa',   tz:'Africa/Johannesburg',  a:['jhb','joburg']},
+  {f:'🇲🇦',n:'Casablanca',    c:'Morocco',        tz:'Africa/Casablanca',    a:[]},
+  // Asia & Oceania
+  {f:'🇮🇳',n:'Mumbai',        c:'India',          tz:'Asia/Kolkata',         a:['bombay']},
+  {f:'🇮🇳',n:'Delhi',         c:'India',          tz:'Asia/Kolkata',         a:['new delhi']},
+  {f:'🇮🇳',n:'Bangalore',     c:'India',          tz:'Asia/Kolkata',         a:['bengaluru']},
+  {f:'🇧🇩',n:'Dhaka',         c:'Bangladesh',     tz:'Asia/Dhaka',           a:[]},
+  {f:'🇵🇰',n:'Karachi',       c:'Pakistan',       tz:'Asia/Karachi',         a:[]},
+  {f:'🇱🇰',n:'Colombo',       c:'Sri Lanka',      tz:'Asia/Colombo',         a:[]},
+  {f:'🇳🇵',n:'Kathmandu',     c:'Nepal',          tz:'Asia/Kathmandu',       a:[]},
+  {f:'🇹🇭',n:'Bangkok',       c:'Thailand',       tz:'Asia/Bangkok',         a:[]},
+  {f:'🇻🇳',n:'Ho Chi Minh City',c:'Vietnam',      tz:'Asia/Ho_Chi_Minh',     a:['saigon','hcmc']},
+  {f:'🇸🇬',n:'Singapore',     c:'Singapore',      tz:'Asia/Singapore',       a:['sg']},
+  {f:'🇲🇾',n:'Kuala Lumpur',  c:'Malaysia',       tz:'Asia/Kuala_Lumpur',    a:['kl']},
+  {f:'🇮🇩',n:'Jakarta',       c:'Indonesia',      tz:'Asia/Jakarta',         a:[]},
+  {f:'🇵🇭',n:'Manila',        c:'Philippines',    tz:'Asia/Manila',          a:[]},
+  {f:'🇨🇳',n:'Shanghai',      c:'China',          tz:'Asia/Shanghai',        a:[]},
+  {f:'🇨🇳',n:'Beijing',       c:'China',          tz:'Asia/Shanghai',        a:['peking']},
+  {f:'🇭🇰',n:'Hong Kong',     c:'Hong Kong',      tz:'Asia/Hong_Kong',       a:['hk']},
+  {f:'🇹🇼',n:'Taipei',        c:'Taiwan',         tz:'Asia/Taipei',          a:[]},
+  {f:'🇰🇷',n:'Seoul',         c:'South Korea',    tz:'Asia/Seoul',           a:[]},
+  {f:'🇯🇵',n:'Tokyo',         c:'Japan',          tz:'Asia/Tokyo',           a:[]},
+  {f:'🇯🇵',n:'Osaka',         c:'Japan',          tz:'Asia/Tokyo',           a:[]},
+  {f:'🇦🇺',n:'Sydney',        c:'Australia',      tz:'Australia/Sydney',     a:[]},
+  {f:'🇦🇺',n:'Melbourne',     c:'Australia',      tz:'Australia/Melbourne',  a:[]},
+  {f:'🇦🇺',n:'Brisbane',      c:'Australia',      tz:'Australia/Brisbane',   a:[]},
+  {f:'🇦🇺',n:'Perth',         c:'Australia',      tz:'Australia/Perth',      a:[]},
+  {f:'🇳🇿',n:'Auckland',      c:'New Zealand',    tz:'Pacific/Auckland',     a:[]},
+];
+
+/* ═══════════════════════════════════
+   STATE & STORAGE
+═══════════════════════════════════ */
+let state = {
+  home: null,         // city object
+  clocks: [],         // city objects saved to world clock
+  settings: {
+    fmt: 'auto',
+    theme: 'system',
+    morning: 6,
+    afternoon: 12,
+    evening: 18,
+    night: 22,
+    workStart: 9,
+    workEnd: 17,
+  },
+  // Converter
+  convFrom: null,
+  convTo: null,
+  convTime: '09:00',
+  convDate: DateTime.now().toFormat('yyyy-MM-dd'),
+  convAmbiguous: null, // 'early'|'late'
+  // Meeting
+  meetCities: [],
+  meetSliderH: 9,
+  // UI
+  currentTab: 'clock',
+  cityPickCallback: null,
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('worldclock_v4');
+    if (saved) {
+      const d = JSON.parse(saved);
+      state.home     = d.home     || null;
+      state.clocks   = d.clocks   || [];
+      state.settings = { ...state.settings, ...d.settings };
+      state.meetCities = d.meetCities || [];
+      state.convFrom = d.convFrom || null;
+      state.convTo   = d.convTo   || null;
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('worldclock_v4', JSON.stringify({
+      home:     state.home,
+      clocks:   state.clocks,
+      settings: state.settings,
+      meetCities: state.meetCities,
+      convFrom: state.convFrom,
+      convTo:   state.convTo,
+    }));
+  } catch(e) {}
+}
+
+/* ═══════════════════════════════════
+   THEME
+═══════════════════════════════════ */
+function applyTheme() {
+  const t = state.settings.theme;
+  let isDark = false;
+  if (t === 'dark') { document.documentElement.setAttribute('data-theme','dark'); isDark = true; }
+  else if (t === 'light') { document.documentElement.removeAttribute('data-theme'); }
+  else {
+    // system
+    isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (isDark) document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+  }
+  // Sync browser chrome theme-color
+  const meta = document.getElementById('metaThemeColor');
+  if (meta) meta.content = isDark ? '#141210' : '#faf9f7';
+}
+
+/* ═══════════════════════════════════
+   TIME HELPERS
+═══════════════════════════════════ */
+function use24() {
+  const f = state.settings.fmt;
+  if (f === '24') return true;
+  if (f === '12') return false;
+  // auto: detect locale
+  const t = new Date().toLocaleTimeString(navigator.language || 'en');
+  return !t.match(/am|pm/i);
+}
+
+function fmtTime(dt) {
+  if (use24()) return dt.toFormat('HH:mm');
+  return dt.toFormat('h:mm');
+}
+
+function fmtAMPM(dt) {
+  if (use24()) return '';
+  return dt.toFormat('a');
+}
+
+function statusOf(h) {
+  const s = state.settings;
+  const morning   = parseInt(s.morning);
+  const afternoon = parseInt(s.afternoon);
+  const evening   = parseInt(s.evening);
+  const night     = parseInt(s.night);
+  if (h >= morning   && h < afternoon) return { cls:'chip-morning',   icon:'🌤', label:'Morning' };
+  if (h >= afternoon && h < evening)   return { cls:'chip-afternoon', icon:'☀️', label:'Afternoon' };
+  if (h >= evening   && h < night)     return { cls:'chip-evening',   icon:'🌆', label:'Evening' };
+  return { cls:'chip-night', icon:'🌙', label:'Night' };
+}
+
+function fmtDate(dt) {
+  return dt.toFormat('EEE, d MMM');
+}
+
+function dayDelta(dt1, dt2) {
+  const d = dt2.startOf('day').diff(dt1.startOf('day'), 'days').days;
+  if (d === 0) return { cls:'delta-same', label:'Same day' };
+  if (d > 0)   return { cls:'delta-next', label:`Next day (+${d})` };
+  return { cls:'delta-prev', label:`Previous day (${d})` };
+}
+
+function getUTCOff(tz) {
+  const off = DateTime.now().setZone(tz).offset;
+  const h = Math.floor(Math.abs(off)/60);
+  const m = Math.abs(off)%60;
+  return `UTC${off>=0?'+':'−'}${String(h).padStart(2,'0')}${m?':'+String(m).padStart(2,'0'):''}`;
+}
+
+/* ═══════════════════════════════════
+   CITY SEARCH ENGINE
+═══════════════════════════════════ */
+function normalize(s) {
+  return (s||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9 ]/g,' ').trim();
+}
+
+function searchCities(q) {
+  if (!q || q.length < 1) return CITIES.slice(0, 30);
+  const nq = normalize(q);
+  const scored = CITIES.map(c => {
+    const nn = normalize(c.n);
+    const nc = normalize(c.c);
+    const na = (c.a||[]).map(normalize);
+    let score = 0;
+    if (nn === nq) score = 100;
+    else if (nn.startsWith(nq)) score = 80;
+    else if (nn.includes(nq)) score = 60;
+    else if (nc.includes(nq)) score = 40;
+    else if (na.some(a => a.includes(nq))) score = 70;
+    else if (normalize(c.tz).includes(nq)) score = 30;
+    return { c, score };
+  }).filter(x => x.score > 0)
+    .sort((a,b) => b.score - a.score);
+  return scored.slice(0, 15).map(x => x.c);
+}
+
+/* ═══════════════════════════════════
+   DROPDOWN BUILDER (shared)
+═══════════════════════════════════ */
+let ddHighlight = -1;
+let ddResults = [];
+let ddCallback = null;
+
+function buildDropdown(containerId, results, callback) {
+  const el = document.getElementById(containerId);
+  ddResults = results;
+  ddCallback = callback;
+  ddHighlight = -1;
+  const now = DateTime.now();
+
+  if (!results.length) {
+    el.innerHTML = '<div class="dd-empty">No matches. Try a different spelling.</div>';
+    el.classList.add('open');
+    return;
+  }
+
+  let html = '';
+  let lastGroup = null;
+  const groups = ['Americas','Europe','Africa & Middle East','Asia & Oceania'];
+
+  results.forEach((c, i) => {
+    const dt = now.setZone(c.tz);
+    const off = dt.offset/60;
+    const offStr = off===0?'UTC±0': off>0?`+${off}h`:`${off}h`;
+    html += `<div class="dd-row" data-i="${i}" tabindex="0">
+      <span class="dd-flag">${c.f}</span>
+      <div class="dd-info">
+        <div class="dd-name">${c.n}, ${c.c}</div>
+        <div class="dd-sub">${c.tz} — ${offStr}</div>
+      </div>
+      <div class="dd-time">${fmtTime(dt)}</div>
+    </div>`;
+  });
+
+  el.innerHTML = html;
+  el.classList.add('open');
+
+  el.querySelectorAll('.dd-row').forEach((row, i) => {
+    row.addEventListener('mousedown', e => {
+      e.preventDefault();
+      selectDD(i);
+    });
+  });
+}
+
+function moveDD(dir, ddEl) {
+  const rows = ddEl.querySelectorAll('.dd-row');
+  if (!rows.length) return;
+  rows[ddHighlight]?.classList.remove('hi');
+  ddHighlight = Math.max(0, Math.min(rows.length-1, ddHighlight + dir));
+  rows[ddHighlight]?.classList.add('hi');
+  rows[ddHighlight]?.scrollIntoView({ block:'nearest' });
+}
+
+function selectDD(i) {
+  const city = ddResults[i];
+  if (city && ddCallback) ddCallback(city);
+}
+
+/* ═══════════════════════════════════
+   ONBOARDING
+═══════════════════════════════════ */
+let obSelectedCity = null;
+let _obClockInterval = null;
+
+// Preview cities: fixed, well-known, no state dependency
+const OB_PREVIEW_CITIES = [
+  { id: 'obPreviewNY',  tz: 'America/New_York' },
+  { id: 'obPreviewLon', tz: 'Europe/London'    },
+  { id: 'obPreviewTok', tz: 'Asia/Tokyo'       },
+];
+
+// Returns { h, m } hour/minute strings from a Luxon DateTime.
+function obFmtTime(dt) {
+  const s = dt.toFormat('HH:mm');
+  return { h: s.slice(0, 2), m: s.slice(3, 5) };
+}
+
+// Updates a time element's digit spans without touching the colon span.
+// Each time element has three children: .ob-d-h | .ob-colon | .ob-d-m
+// (UTC wrapper uses .ob-u-h / .ob-u-m but same positions: first + last child)
+// noBlink = true skips the tick transition (first render / city select).
+function obSetTime(el, hm, noBlink) {
+  if (!el) return;
+  const children = el.children;
+
+  if (!children.length) {
+    // Bare element (ob-sel-time) — plain text, no colon span
+    const isFirstRender = (el.textContent === '');
+    if (isFirstRender || noBlink) {
+      el.textContent = `${hm.h}:${hm.m}`;
+    } else {
+      el.classList.add('ob-tick-out');
+      setTimeout(() => {
+        el.textContent = `${hm.h}:${hm.m}`;
+        el.classList.remove('ob-tick-out');
+      }, 90);
+    }
+    return;
+  }
+
+  // children[0] = hours span, children[1] = colon span (untouched), children[2] = minutes span
+  const hEl = children[0];
+  const mEl = children[children.length - 1]; // last child = minutes
+
+  const isFirstRender = (hEl.textContent === '—');
+
+  if (isFirstRender || noBlink) {
+    hEl.textContent = hm.h;
+    mEl.textContent = hm.m;
+    return;
+  }
+
+  // Tick: fade + shift out, swap digits, fade back in
+  el.classList.add('ob-tick-out');
+  setTimeout(() => {
+    hEl.textContent = hm.h;
+    mEl.textContent = hm.m;
+    el.classList.remove('ob-tick-out');
+  }, 90);
+}
+
+function obTickClock(noBlink) {
+  try {
+    const now = DateTime.now();
+
+    // UTC — uses innerHTML for colon span
+    const utcEl = document.getElementById('obPreviewUtc');
+    if (utcEl) obSetTime(utcEl, obFmtTime(now.toUTC()), noBlink);
+
+    // Three preview cities
+    OB_PREVIEW_CITIES.forEach(({ id, tz }) => {
+      const el = document.getElementById(id);
+      if (el) obSetTime(el, obFmtTime(now.setZone(tz)), noBlink);
+    });
+
+    // Selected city card
+    if (obSelectedCity) {
+      const selEl = document.getElementById('obSelTime');
+      if (selEl) obSetTime(selEl, obFmtTime(now.setZone(obSelectedCity.tz)), noBlink);
+    }
+  } catch(e) { /* fail silently — never crash onboarding */ }
+}
+
+function obStartClock() {
+  // Fire immediately (first render — no transition)
+  obTickClock(true);
+
+  // Synchronize to the start of the next minute, then tick every 60s exactly.
+  // This keeps the display aligned with the system clock rather than drifting.
+  function scheduleNext() {
+    const now = DateTime.now();
+    const msUntilNextMinute = (60 - now.second) * 1000 - now.millisecond;
+    _obClockInterval = setTimeout(() => {
+      obTickClock(false);
+      // Now start a regular 60s interval from this aligned point
+      _obClockInterval = setInterval(() => obTickClock(false), 60000);
+    }, msUntilNextMinute);
+  }
+  scheduleNext();
+}
+
+function obStopClock() {
+  if (_obClockInterval) {
+    clearTimeout(_obClockInterval);
+    clearInterval(_obClockInterval);
+    _obClockInterval = null;
+  }
+}
+
+function initOnboarding() {
+  const obSearch = document.getElementById('obSearch');
+  const obDropdown = document.getElementById('obDropdown');
+
+  obSearch.addEventListener('input', () => {
+    const q = obSearch.value;
+    const results = searchCities(q);
+    buildDropdown('obDropdown', results, city => {
+      obSelectedCity = city;
+      obSearch.value = '';
+      document.getElementById('obSelected').classList.remove('hidden');
+      document.getElementById('obSelFlag').textContent = city.f;
+      document.getElementById('obSelName').textContent = `${city.n}, ${city.c}`;
+      document.getElementById('obSelTZ').textContent = city.tz;
+      document.getElementById('obSaveBtn').disabled = false;
+      obDropdown.classList.remove('open');
+      obTickClock(); // instantly show selected city time
+    });
+  });
+
+  obSearch.addEventListener('focus', () => {
+    const results = searchCities(obSearch.value);
+    buildDropdown('obDropdown', results, city => {
+      obSelectedCity = city;
+      obSearch.value = '';
+      document.getElementById('obSelected').classList.remove('hidden');
+      document.getElementById('obSelFlag').textContent = city.f;
+      document.getElementById('obSelName').textContent = `${city.n}, ${city.c}`;
+      document.getElementById('obSelTZ').textContent = city.tz;
+      document.getElementById('obSaveBtn').disabled = false;
+      obDropdown.classList.remove('open');
+      obTickClock(); // instantly show selected city time
+    });
+  });
+
+  obSearch.addEventListener('blur', () => {
+    setTimeout(() => obDropdown.classList.remove('open'), 150);
+  });
+
+  obSearch.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); moveDD(1, obDropdown); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); moveDD(-1, obDropdown); }
+    if (e.key === 'Enter' && ddHighlight >= 0) selectDD(ddHighlight);
+    if (e.key === 'Escape') obDropdown.classList.remove('open');
+  });
+
+  // Auto-detect home from browser timezone
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const match = CITIES.find(c => c.tz === tz) || CITIES.find(c => tz.includes(c.tz.split('/')[1]));
+    if (match) {
+      obSelectedCity = match;
+      document.getElementById('obSelected').classList.remove('hidden');
+      document.getElementById('obSelFlag').textContent = match.f;
+      document.getElementById('obSelName').textContent = `${match.n}, ${match.c}`;
+      document.getElementById('obSelTZ').textContent = match.tz;
+      document.getElementById('obSaveBtn').disabled = false;
+      obTickClock(); // instantly show auto-detected city time
+    }
+  } catch(e) {}
+}
+
+function saveHome() {
+  if (!obSelectedCity) return;
+  obStopClock();
+  state.home = obSelectedCity;
+  // Add home to clocks if not already there
+  if (!state.clocks.find(c => c.tz === state.home.tz && c.n === state.home.n)) {
+    state.clocks.unshift(state.home);
+  }
+  saveState();
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('appShell').classList.remove('hidden');
+  showToast(`Home set to ${state.home.n}.`);
+  refreshSettings();
+  renderCurrentTab();
+}
+
+function skipOnboarding() {
+  obStopClock();
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('appShell').classList.remove('hidden');
+  renderCurrentTab();
+}
+
+/* ═══════════════════════════════════
+   SETTINGS
+═══════════════════════════════════ */
+function openSettings() {
+  document.getElementById('settingsScreen').classList.add('open');
+  refreshSettings();
+}
+
+function closeSettings() {
+  document.getElementById('settingsScreen').classList.remove('open');
+  renderCurrentTab();
+}
+
+function refreshSettings() {
+  const s = state.settings;
+  document.getElementById('settingsHomeName').textContent =
+    state.home ? `${state.home.f} ${state.home.n}` : 'Not set';
+  document.getElementById('settingsFmt').value   = s.fmt;
+  document.getElementById('settingsTheme').value = s.theme;
+  document.getElementById('setMorning').value    = s.morning;
+  document.getElementById('setAfternoon').value  = s.afternoon;
+  document.getElementById('setEvening').value    = s.evening;
+  document.getElementById('setNight').value      = s.night;
+  document.getElementById('setWorkStart').value  = s.workStart;
+  document.getElementById('setWorkEnd').value    = s.workEnd;
+}
+
+function saveSetting(key, value) {
+  state.settings[key] = value;
+  saveState();
+  if (key === 'theme') {
+    applyTheme();
+  } else {
+    // Live-update the currently open tab so changes are immediately visible
+    renderCurrentTab();
+  }
+}
+
+function changeHomeFromSettings() {
+  closeSettings();
+  openCityPicker('Change home location', city => {
+    state.home = city;
+    if (!state.clocks.find(c => c.tz === city.tz && c.n === city.n)) {
+      state.clocks.unshift(city);
+    }
+    saveState();
+    showToast(`Home set to ${city.n}.`);
+    refreshSettings();
+    renderCurrentTab();
+  });
+}
+
+/* ═══════════════════════════════════
+   CITY PICKER MODAL
+═══════════════════════════════════ */
+function openCityPicker(title, callback) {
+  document.getElementById('cityPickTitle').textContent = title;
+  state.cityPickCallback = callback;
+  const modal = document.getElementById('cityPickModal');
+  modal.classList.remove('hidden');
+
+  const input = document.getElementById('cityPickSearch');
+  const dd    = document.getElementById('cityPickDropdown');
+  input.value = '';
+
+  const refresh = () => {
+    const results = searchCities(input.value);
+    buildDropdown('cityPickDropdown', results, city => {
+      closeModal('cityPickModal');
+      if (state.cityPickCallback) state.cityPickCallback(city);
+    });
+  };
+
+  input.oninput = refresh;
+  input.onkeydown = e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); moveDD(1, dd); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); moveDD(-1, dd); }
+    if (e.key === 'Enter' && ddHighlight >= 0) selectDD(ddHighlight);
+    if (e.key === 'Escape') closeModal('cityPickModal');
+  };
+
+  refresh();
+  setTimeout(() => input.focus(), 50);
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+/* ═══════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════ */
+// Fix tab IDs
+function switchTab(tab) {
+  state.currentTab = tab;
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  const ids = {clock:'navClock', converter:'navConv', meeting:'navMeet'};
+  // Tab context labels — shown under the "Hour" wordmark as a small subtitle
+  const labels = {clock:'', converter:'Convert time', meeting:'Plan a meeting'};
+  document.getElementById(ids[tab])?.classList.add('active');
+  const titleEl = document.getElementById('topbarTitle');
+  if (titleEl) titleEl.textContent = labels[tab];
+  renderCurrentTab();
+}
+
+function renderCurrentTab() {
+  const c = document.getElementById('pageContent');
+  if (state.currentTab === 'clock')     { c.innerHTML = renderClockHTML();     attachClockEvents(); }
+  if (state.currentTab === 'converter') { c.innerHTML = renderConverterHTML(); attachConverterEvents(); }
+  if (state.currentTab === 'meeting')   { c.innerHTML = renderMeetingHTML();   attachMeetingEvents(); }
+}
+
+// Pre-load demo cities when user has no home set (eliminates empty state)
+function ensureDemoCities() {
+  if (!state.home && state.clockCities.length === 0) {
+    const defaults = ['Stockholm', 'London', 'New York'];
+    const found = defaults.map(n => CITIES.find(c => c.n === n)).filter(Boolean);
+    if (found.length) state.clockCities = found;
+  }
+}
+
+/* ═══════════════════════════════════
+   WORLD CLOCK TAB
+═══════════════════════════════════ */
+function renderClockHTML() {
+  const now = DateTime.now();
+  let html = `<div class="wc-add-row">
+    <button class="btn-outline" onclick="addClockCity()" aria-label="Add city">
+      + Add city
+    </button>
+  </div>`;
+
+  if (!state.clocks.length) {
+    html += `<div class="empty-state">
+      <div class="empty-icon">🌍</div>
+      <div class="empty-title">Add your first city</div>
+      <div class="empty-text">Search for a city to see the local time and day difference.</div>
+      <button class="btn-primary" onclick="addClockCity()">Add city</button>
+    </div>`;
+    return html;
+  }
+
+  html += '<div class="city-list" id="cityList">';
+  state.clocks.forEach((city, i) => {
+    const dt = now.setZone(city.tz);
+    const isHome = state.home && city.tz === state.home.tz && city.n === state.home.n;
+    const s = statusOf(dt.hour);
+    const homeDt = state.home ? now.setZone(state.home.tz) : now;
+    const delta = dayDelta(homeDt, dt);
+    let dayLine = fmtDate(dt);
+    if (state.home && !isHome) {
+      const dd = dt.startOf('day').diff(homeDt.startOf('day'), 'days').days;
+      if (dd !== 0) dayLine += dd > 0 ? ` · Tomorrow (+${dd})` : ` · Yesterday (${dd})`;
+    }
+
+    html += `<div class="city-card" data-i="${i}" draggable="true" onclick="jumpToConverter(${i})" title="Convert time for ${city.n}">
+      <span class="cc-flag">${city.f}</span>
+      <div class="cc-info">
+        <div class="cc-time-row">
+          <span class="cc-time">${fmtTime(dt)}</span>
+          <span class="cc-ampm">${fmtAMPM(dt)}</span>
+        </div>
+        <div class="cc-name">${city.n}, ${city.c}</div>
+        <div class="cc-meta">
+          <span>${dayLine}</span>
+          <span class="cc-meta-dot">•</span>
+          <span class="status-chip ${s.cls}">${s.icon} ${s.label}</span>
+          ${isHome ? '<span class="home-badge">🏠 Home</span>' : ''}
+        </div>
+      </div>
+      <button class="cc-remove" onclick="event.stopPropagation();confirmRemoveCity(${i})" aria-label="Remove city ${city.n}" title="Remove ${city.n}">✕</button>
+    </div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+function attachClockEvents() {
+  // drag-to-reorder (simplified touch-friendly)
+  const list = document.getElementById('cityList');
+  if (!list) return;
+  let dragging = null;
+  list.querySelectorAll('.city-card').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragging = card;
+      card.style.opacity = '0.5';
+    });
+    card.addEventListener('dragend', e => {
+      card.style.opacity = '';
+      dragging = null;
+    });
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!dragging || dragging === card) return;
+      const rect = card.getBoundingClientRect();
+      const mid = rect.top + rect.height/2;
+      if (e.clientY < mid) list.insertBefore(dragging, card);
+      else list.insertBefore(dragging, card.nextSibling);
+    });
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      // Sync state.clocks to DOM order
+      const newOrder = [...list.querySelectorAll('.city-card')].map(c => {
+        const i = parseInt(c.getAttribute('data-i'));
+        return state.clocks[i];
+      });
+      state.clocks = newOrder;
+      saveState();
+      renderCurrentTab();
+    });
+  });
+}
+
+function addClockCity() {
+  openCityPicker('Add city', city => {
+    if (!state.clocks.find(c => c.tz === city.tz && c.n === city.n)) {
+      state.clocks.push(city);
+      saveState();
+    }
+    renderCurrentTab();
+  });
+}
+
+let removeIndex = null;
+function confirmRemoveCity(i) {
+  removeIndex = i;
+  const city = state.clocks[i];
+  document.getElementById('removeModalTitle').textContent = `Remove ${city.n}?`;
+  document.getElementById('removeModalText').textContent = `You can add it again anytime.`;
+  document.getElementById('removeConfirmBtn').textContent = 'Remove';
+  document.getElementById('removeConfirmBtn').onclick = () => {
+    state.clocks.splice(removeIndex, 1);
+    saveState();
+    closeModal('removeModal');
+    renderCurrentTab();
+  };
+  document.getElementById('removeModal').classList.remove('hidden');
+}
+
+/* ═══════════════════════════════════
+   CONVERTER TAB
+═══════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   GUIDE REGISTRY
+   Keys: sorted pair of city names, lowercase, joined by '|'
+   Only include pairs with published guide pages.
+   Add entries here as new pages go live.
+═══════════════════════════════════════════════════════ */
+const GUIDE_REGISTRY = {
+  'london|new york':      { slug: 'new-york-to-london-time',         insight: 'Only ~3 real overlap hours — all at London\'s end of day' },
+  'frankfurt|new york':   { slug: 'frankfurt-to-new-york-time',      insight: 'The financial axis — market opens 6 hours apart' },
+  'dubai|london':         { slug: 'london-to-dubai-time',            insight: 'Dubai never moves — only London\'s clocks shift' },
+  'los angeles|new york': { slug: 'new-york-to-los-angeles-time',    insight: '3 hours, always — but 9am ET is 6am in LA' },
+  'new york|stockholm':   { slug: 'stockholm-to-new-york-time',      insight: '6 hours apart — overlap is entirely Sweden\'s late afternoon' },
+  'london|singapore':     { slug: 'london-to-singapore-time',        insight: '7–8 hours apart — near-zero standard overlap' },
+  'stockholm|tokyo':      { slug: 'stockholm-to-tokyo-time',         insight: '7–8 hours apart — Japan never moves, Sweden does' },
+  'dubai|new york':       { slug: 'dubai-to-new-york-time',          insight: '8–9 hours apart — New York mornings, Dubai late afternoons' },
+  'london|sydney':        { slug: 'sydney-to-london-time',           insight: 'Three seasonal phases — the gap changes direction twice a year' },
+  'detroit|gothenburg':   { slug: 'gothenburg-to-detroit-time',      insight: '6 hours apart — overlap lives entirely in Sweden\'s late afternoon' },
+  'munich|seoul':         { slug: 'munich-to-seoul-time',            insight: '7–8 hours apart — German mornings, Korean late afternoons' },
+  'beijing|stuttgart':    { slug: 'stuttgart-to-beijing-time',       insight: '6–7 hours apart — China never moves, Germany does' },
+  'london|mumbai':        { slug: 'london-to-mumbai-time',           insight: 'The +5:30 offset — never round India to "5 hours ahead"' },
+  'new york|são paulo':   { slug: 'sao-paulo-to-new-york-time',      insight: '1–2 hours apart — generous overlap, but the drift is subtle' },
+  'amsterdam|new york':   { slug: 'amsterdam-to-new-york-time',      insight: '6 hours apart — overlap lives entirely in Amsterdam\'s late afternoon' },
+};
+
+// Returns a guide entry if the two cities match a known pair, or null.
+function guideForPair(cityA, cityB) {
+  if (!cityA || !cityB) return null;
+  const key = [cityA.n, cityB.n].map(n => n.toLowerCase()).sort().join('|');
+  return GUIDE_REGISTRY[key] || null;
+}
+
+/* ═══════════════════════════════════════════════════════
+   COMMON CORRIDORS for homepage
+   Shown below the converter always — max 6, curated.
+═══════════════════════════════════════════════════════ */
+const CORRIDORS = [
+  { slug: 'new-york-to-london-time',      name: 'New York ↔ London',      desc: 'Only ~3 real overlap hours' },
+  { slug: 'stockholm-to-new-york-time',   name: 'Stockholm ↔ New York',   desc: 'Overlap lives at end of Sweden\'s day' },
+  { slug: 'frankfurt-to-new-york-time',   name: 'Frankfurt ↔ New York',   desc: 'The financial market axis' },
+  { slug: 'london-to-dubai-time',         name: 'London ↔ Dubai',         desc: 'Only one side ever moves' },
+  { slug: 'new-york-to-los-angeles-time', name: 'New York ↔ Los Angeles', desc: '3 hours always — still costs someone their morning' },
+  { slug: 'london-to-singapore-time',     name: 'London ↔ Singapore',     desc: 'Near-zero standard overlap' },
+];
+
+function renderConverterHTML() {
+  // Always default From to home city
+  const from = state.convFrom || state.home || CITIES[0];
+  const to   = state.convTo;
+  const t    = state.convTime || DateTime.now().toFormat('HH:mm');
+  // Always use today unless user has explicitly locked a different date
+  const d    = state.convDateLocked
+    ? (state.convDate || DateTime.now().toFormat('yyyy-MM-dd'))
+    : DateTime.now().toFormat('yyyy-MM-dd');
+  state.convDate = d;
+
+  const fromC = from;
+  const toC   = to || (state.home && state.home.tz !== (from?.tz)
+    ? CITIES.find(c => c.tz !== from?.tz)
+    : CITIES.find(c => c.tz !== (state.home?.tz))) || CITIES[1];
+
+  let result = '';
+  let dstWarning = '';
+
+  if (fromC && toC) {
+    try {
+      const [h, m] = t.split(':').map(Number);
+      const fromDt = DateTime.fromISO(`${d}T${t}:00`, { zone: fromC.tz });
+
+      // DST: non-existent time (spring forward — clocks skip this hour)
+      if (!fromDt.isValid || fromDt.hour !== h) {
+        const suggested = DateTime.fromISO(`${d}T${t}:00`, { zone: fromC.tz, disambiguate: 'later' }).toFormat('HH:mm');
+        dstWarning = `<div class="dst-warning">
+          <div class="dst-warning-title">⚠️ This time doesn't exist</div>
+          <div class="dst-warning-text">Clocks move forward on this date in ${fromC.n}. This hour is skipped. Try ${suggested} instead.</div>
+          <button class="dst-action" onclick="setConvTime('${suggested}')">Use ${suggested}</button>
+        </div>`;
+      } else {
+        // DST: ambiguous time (fall back — clocks repeat this hour)
+        // Detect by checking if the hour before and after have different offsets
+        const dtEarly = DateTime.fromISO(`${d}T${t}:00`, { zone: fromC.tz, disambiguate: 'earlier' });
+        const dtLate  = DateTime.fromISO(`${d}T${t}:00`, { zone: fromC.tz, disambiguate: 'later'  });
+        const isAmbiguous = dtEarly.offset !== dtLate.offset;
+
+        const resolvedFrom = isAmbiguous
+          ? (state.convAmbiguous === 'late' ? dtLate : dtEarly)
+          : fromDt;
+
+        const toDt = resolvedFrom.setZone(toC.tz);
+        const dd   = dayDelta(resolvedFrom, toDt);
+
+        if (isAmbiguous) {
+          const earlyUTC = dtEarly.toUTC().toFormat('HH:mm') + ' UTC';
+          const lateUTC  = dtLate.toUTC().toFormat('HH:mm')  + ' UTC';
+          dstWarning = `<div class="dst-warning" style="background:var(--c-night-bg);border-color:#a0a0d0;">
+            <div class="dst-warning-title" style="color:var(--c-night);">🔁 This time happens twice</div>
+            <div class="dst-warning-text">Clocks move back on this date in ${fromC.n}. Choose which one you mean.</div>
+            <div class="dst-choices">
+              <button class="dst-choice ${state.convAmbiguous !== 'late' ? 'selected' : ''}"
+                onclick="setConvAmbiguous('early')">Earlier <span style="opacity:0.6;font-size:11px;">${earlyUTC}</span></button>
+              <button class="dst-choice ${state.convAmbiguous === 'late' ? 'selected' : ''}"
+                onclick="setConvAmbiguous('late')">Later <span style="opacity:0.6;font-size:11px;">${lateUTC}</span></button>
+            </div>
+          </div>`;
+        }
+
+        result = `<div class="result-card">
+          <div class="result-header">Result</div>
+          <div class="result-body">
+            <div class="result-line">
+              <div>
+                <div class="result-time">${fmtTime(resolvedFrom)}${use24()?'':' '+fmtAMPM(resolvedFrom)}</div>
+                <div class="result-city">${fromC.f} ${fromC.n}</div>
+                <div style="font-size:11px;color:var(--c-ink4);margin-top:2px;">${fmtDate(resolvedFrom)}</div>
+              </div>
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--c-ink4);font-size:20px;">→</div>
+              <div style="text-align:right">
+                <div class="result-time">${fmtTime(toDt)}${use24()?'':' '+fmtAMPM(toDt)}</div>
+                <div class="result-city">${toC.f} ${toC.n}</div>
+                <div style="font-size:11px;color:var(--c-ink4);margin-top:2px;">${fmtDate(toDt)}</div>
+              </div>
+            </div>
+            <div>
+              <span class="delta-tag ${dd.cls}">${dd.label}</span>
+            </div>
+          </div>
+        </div>`;
+      }
+    } catch(e) {
+      result = `<div class="result-card"><div class="result-body"><div style="color:var(--c-ink4);font-size:14px;">Unable to convert — check inputs.</div></div></div>`;
+    }
+  }
+
+  return `<div class="conv-body">
+
+    <div class="conv-left">
+      <div class="form-card">
+        <div class="form-row">
+          <div class="form-label">From</div>
+          <button class="form-city-btn" onclick="pickConvCity('from')" aria-label="Choose from city">
+            <span class="form-city-flag">${fromC?.f||'🌍'}</span>
+            <span class="form-city-name">${fromC ? `${fromC.n}, ${fromC.c}` : 'Choose city'}</span>
+            <span class="form-city-caret">▼</span>
+          </button>
+        </div>
+        <div class="form-row">
+          <div class="form-label">Time</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="time" class="form-time-input" id="convTimeInput" value="${t}" aria-label="Time" oninput="convTimeChanged(this.value)" style="flex:1;">
+            <button onclick="setConvNow()" style="flex-shrink:0;padding:6px 12px;background:var(--c-surface2);border:1.5px solid var(--c-border);border-radius:var(--r-full);font-family:var(--font-ui);font-size:12px;font-weight:600;color:var(--c-ink2);cursor:pointer;transition:all 0.15s;white-space:nowrap;" onmouseover="this.style.borderColor='var(--c-accent)';this.style.color='var(--c-accent)'" onmouseout="this.style.borderColor='var(--c-border)';this.style.color='var(--c-ink2)'" aria-label="Use current time">Now</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">Date</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="date" class="form-date-input" id="convDateInput" value="${d}" aria-label="Date" oninput="convDateChanged(this.value)">
+            ${state.convDateLocked ? `<button onclick="convResetDate()" style="font-size:12px;color:var(--c-accent);background:none;border:none;cursor:pointer;white-space:nowrap;font-family:var(--font-ui);">Use today</button>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="swap-row">
+        <button class="swap-btn-main" onclick="swapConv()" aria-label="Swap from and to">
+          ⇅ Swap
+        </button>
+      </div>
+
+      <div class="form-card">
+        <div class="form-row">
+          <div class="form-label">To</div>
+          <button class="form-city-btn" onclick="pickConvCity('to')" aria-label="Choose to city">
+            <span class="form-city-flag">${toC?.f||'🌍'}</span>
+            <span class="form-city-name">${toC ? `${toC.n}, ${toC.c}` : 'Choose city'}</span>
+            <span class="form-city-caret">▼</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="quick-label">Quick pick</div>
+      <div class="quick-row">
+        ${['08:00','09:00','12:00','15:00','17:00','20:00'].map(qt =>
+          `<button class="quick-btn ${t===qt?'active':''}" onclick="setConvTime('${qt}')">${qt}</button>`
+        ).join('')}
+      </div>
+    </div>
+
+    <div class="conv-right">
+      ${dstWarning}
+      ${result}
+      ${(()=>{
+        // A — Contextual guide hint: only when result is showing and pair has a published guide
+        if (!result) return '';
+        const guide = guideForPair(fromC, toC);
+        if (!guide) return '';
+        return `<div class="gi-hint">
+          <span class="gi-hint-text">${guide.insight}</span>
+          <a href="https://worldhour.app/${guide.slug}" class="gi-hint-link" target="_blank" rel="noopener">Full guide →</a>
+        </div>`;
+      })()}
+      ${(()=>{
+        // C — Empty state discovery: show when no result yet (user hasn't interacted)
+        if (result) return '';
+        const discoveryPairs = [
+          { slug: 'new-york-to-london-time',    label: 'New York ↔ London',    note: 'Only ~3 real overlap hours' },
+          { slug: 'stockholm-to-new-york-time', label: 'Stockholm ↔ New York', note: 'Overlap is entirely late afternoon' },
+          { slug: 'london-to-dubai-time',       label: 'London ↔ Dubai',       note: 'Only one side ever moves' },
+        ];
+        const links = discoveryPairs.map(p =>
+          `<a href="https://worldhour.app/${p.slug}" class="gi-discovery-link" target="_blank" rel="noopener">${p.label} <span style="color:var(--c-ink4);font-weight:400;font-size:12px;">— ${p.note}</span></a>`
+        ).join('');
+        return `<div class="gi-discovery">
+          <div class="gi-discovery-label">Or see how teams actually schedule across these cities:</div>
+          <div class="gi-discovery-links">${links}</div>
+        </div>`;
+      })()}
+    </div>
+
+  </div>
+
+  ${(()=>{
+    // B — Common corridors: always visible below the converter, outside the form stack
+    const activeGuide = result ? guideForPair(fromC, toC) : null;
+    const rows = CORRIDORS
+      .filter(c => !activeGuide || c.slug !== activeGuide.slug)
+      .map(c =>
+        `<a href="https://worldhour.app/${c.slug}" class="gi-corridor-row" target="_blank" rel="noopener">
+          <span class="gi-corridor-name">${c.name}</span>
+          <span class="gi-corridor-desc">${c.desc}</span>
+        </a>`
+      ).join('');
+    return `<div class="gi-corridors">
+      <div class="gi-corridors-label">Common business corridors</div>
+      ${rows}
+    </div>`;
+  })()}`;
+}
+
+function attachConverterEvents() {}
+
+function convTimeChanged(v) {
+  state.convTime = v;
+  document.querySelectorAll('.quick-btn').forEach(b => b.classList.toggle('active', b.textContent === v));
+  renderCurrentTab();
+}
+
+function convDateChanged(v) {
+  state.convDate = v;
+  state.convDateLocked = (v !== DateTime.now().toFormat('yyyy-MM-dd'));
+  renderCurrentTab();
+}
+
+function convResetDate() {
+  state.convDate = DateTime.now().toFormat('yyyy-MM-dd');
+  state.convDateLocked = false;
+  renderCurrentTab();
+}
+
+function setConvTime(t) {
+  state.convTime = t;
+  state.convAmbiguous = null; // reset ambiguous choice when time changes
+  renderCurrentTab();
+}
+
+function setConvAmbiguous(which) {
+  state.convAmbiguous = which;
+  renderCurrentTab();
+}
+
+function swapConv() {
+  const tmp = state.convFrom;
+  state.convFrom = state.convTo || (state.home ? CITIES.find(c => c.tz !== state.home.tz) : CITIES[1]);
+  state.convTo   = tmp || state.home || CITIES[0];
+  saveState();
+  renderCurrentTab();
+}
+
+function setConvNow() {
+  const now = DateTime.now();
+  const fromC = state.convFrom || state.home || CITIES[0];
+  const localNow = now.setZone(fromC.tz);
+  state.convTime = localNow.toFormat('HH:mm');
+  state.convDateLocked = false;
+  state.convDate = localNow.toFormat('yyyy-MM-dd');
+  renderCurrentTab();
+}
+
+function jumpToConverter(cityIndex) {
+  const city = state.clocks[cityIndex];
+  if (!city) return;
+  state.convFrom = city;
+  // Default "To" = home, unless city IS home
+  if (state.home && (city.tz !== state.home.tz || city.n !== state.home.n)) {
+    state.convTo = state.home;
+  }
+  state.convTime = DateTime.now().setZone(city.tz).toFormat('HH:mm');
+  state.convDateLocked = false;
+  switchTab('converter');
+}
+
+function pickConvCity(which) {
+  openCityPicker(`Choose ${which === 'from' ? 'From' : 'To'} city`, city => {
+    if (which === 'from') state.convFrom = city;
+    else state.convTo = city;
+    saveState();
+    renderCurrentTab();
+  });
+}
+
+/* ═══════════════════════════════════
+   MEETING PLANNER TAB
+═══════════════════════════════════ */
+function renderMeetingHTML() {
+  // Pre-populate with home + a useful default city on first use
+  if (state.meetCities.length === 0 && state.home) {
+    const defaultOther = CITIES.find(c =>
+      c.tz !== state.home.tz && (c.n === 'New York' || c.n === 'London' || c.n === 'Tokyo')
+    ) || CITIES.find(c => c.tz !== state.home.tz);
+    if (defaultOther) state.meetCities = [state.home, defaultOther];
+  }
+  // If still empty (no home set), show Stockholm + London + New York as demo
+  if (state.meetCities.length === 0) {
+    const demoNames = ['Stockholm', 'London', 'New York'];
+    const demos = demoNames.map(n => CITIES.find(c => c.n === n)).filter(Boolean);
+    if (demos.length >= 2) state.meetCities = demos;
+  }
+
+  const cities = state.meetCities;
+  const sliderH = parseInt(state.meetSliderH) || 9;
+  const ws = parseInt(state.settings.workStart) || 9;
+  const we = parseInt(state.settings.workEnd)   || 17;
+  const now = DateTime.now();
+  const refHome = state.home || (cities[0] ? { tz: cities[0].tz } : { tz: 'UTC' });
+
+  // Compute chosen time in all cities
+  const refDt = now.setZone(refHome.tz).set({ hour: sliderH, minute: 0, second: 0 });
+
+  // Find best overlap (hours where ALL cities are in work hours)
+  let overlaps = [];
+  if (cities.length >= 2) {
+    for (let h = 0; h < 24; h++) {
+      const testDt = now.setZone(refHome.tz).set({ hour: h, minute: 0 });
+      const allWork = cities.every(city => {
+        const cityDt = testDt.setZone(city.tz);
+        return cityDt.hour >= ws && cityDt.hour < we;
+      });
+      if (allWork) overlaps.push(h);
+    }
+  }
+
+  // Precompute per-zone overlap hours (for overlap-band highlights)
+  // For each zone, which ref hours land in a working hour?
+  const zoneOverlapHours = (zone) => {
+    const set = new Set();
+    overlaps.forEach(h => set.add(h));
+    return set;
+  };
+
+  let overlapHTML = '';
+  if (cities.length < 2) {
+    overlapHTML = `<div class="no-overlap-card">
+      <div class="no-overlap-title">Add at least two cities</div>
+      <div class="no-overlap-text">Add cities above to find good meeting windows.</div>
+    </div>`;
+  } else if (!overlaps.length) {
+    overlapHTML = `<div class="no-overlap-card">
+      <div class="no-overlap-title">No overlap inside working hours</div>
+      <div class="no-overlap-text">Someone will need to flex. Use the timeline to find the least-bad option.</div>
+      <button class="dst-action" onclick="openSettings()">Adjust working hours</button>
+    </div>`;
+  } else {
+    // Build per-city time strings for the best window start/end
+    const winStart = overlaps[0];
+    const winEnd   = overlaps[overlaps.length - 1] + 1;
+    const winCityTimes = cities.map(city => {
+      const s = now.setZone(refHome.tz).set({hour: winStart, minute:0}).setZone(city.tz);
+      const e = now.setZone(refHome.tz).set({hour: winEnd,   minute:0}).setZone(city.tz);
+      const fmt = t => use24()
+        ? `${String(t.hour).padStart(2,'0')}:00`
+        : `${t.hour % 12 || 12}${t.minute ? ':'+String(t.minute).padStart(2,'0') : ''}${t.hour < 12 ? 'am' : 'pm'}`;
+      return `${city.f} ${city.n} ${fmt(s)}–${fmt(e)}`;
+    }).join(' &nbsp;·&nbsp; ');
+
+    const slotBtns = overlaps.map(h => {
+      const hStr = String(h).padStart(2,'0') + ':00';
+      const isActive = h === sliderH;
+      return `<button class="overlap-slot${isActive ? ' is-active' : ''}" onclick="setMeetSlider(${h})">${hStr}</button>`;
+    }).join('');
+
+    overlapHTML = `<div class="overlap-card" data-overlaps="${overlaps.join(',')}">
+      <div class="best-window-label">
+        <span class="best-window-icon">📅</span>
+        <span class="best-window-title">Best meeting window: ${overlaps.length} hour${overlaps.length!==1?'s':''}</span>
+      </div>
+      <div class="best-window-times">${winCityTimes}</div>
+      <div class="overlap-slots" id="overlapSlots">${slotBtns}</div>
+    </div>`;
+  }
+
+  // Per-hour meeting quality for color-coded timeline bars
+  // 'good'   = all cities inside working hours
+  // 'ok'     = at least one city inside, worst is ≤1h outside
+  // 'avoid'  = someone is >1h outside working hours
+  // 'nogo'   = someone is deep night (before 6am or after 10pm)
+  const hourQuality = (h) => {
+    if (cities.length < 2) return 'neutral';
+    const testDt = now.setZone(refHome.tz).set({ hour: h, minute: 0 });
+    let maxOuter = 0;
+    let deepNight = false;
+    cities.forEach(city => {
+      const lh = testDt.setZone(city.tz).hour;
+      if (lh < 6 || lh >= 22) deepNight = true;
+      const outer = lh < ws ? ws - lh : lh >= we ? lh - we + 1 : 0;
+      if (outer > maxOuter) maxOuter = outer;
+    });
+    if (deepNight)    return 'nogo';
+    if (maxOuter === 0) return 'good';
+    if (maxOuter <= 1)  return 'ok';
+    return 'avoid';
+  };
+  let timelineHTML = '';
+  if (cities.length) {
+    const zones = [...cities];
+    if (state.home && !zones.find(c => c.tz===state.home.tz && c.n===state.home.n)) {
+      zones.unshift(state.home);
+    }
+    const overlapSet = new Set(overlaps);
+    timelineHTML = `<div class="timeline-grid" id="meetTimeline" data-overlaps="${overlaps.join(',')}">
+      <div class="tg-header" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Timeline — 24 hours</span>
+        <span style="font-size:10px;color:var(--c-ink4);font-weight:400;letter-spacing:0;display:flex;align-items:center;gap:8px;">
+          <span class="tg-legend-dot" style="background:#4caf82;"></span>Good
+          <span class="tg-legend-dot" style="background:#e8a838;"></span>OK
+          <span class="tg-legend-dot" style="background:#e05555;"></span>Avoid
+        </span>
+      </div>
+      ${zones.map(city => {
+        const cityDt = refDt.setZone(city.tz);
+        const pct = ((cityDt.hour + cityDt.minute/60) / 24) * 100;
+        const isHome = state.home && city.tz===state.home.tz && city.n===state.home.n;
+        const hasOverlap = overlaps.length > 0;
+        const segs = Array.from({length:24},(_,h)=>{
+          const cls = h>=parseInt(state.settings.morning)&&h<parseInt(state.settings.afternoon)?'tg-morning':
+                      h>=parseInt(state.settings.afternoon)&&h<parseInt(state.settings.evening)?'tg-afternoon':
+                      h>=parseInt(state.settings.evening)&&h<parseInt(state.settings.night)?'tg-evening':'tg-night';
+          const workCls = (h >= ws && h < we) ? 'work' : 'offhour';
+          const bandCls = overlapSet.has(h) ? ' overlap-band' : '';
+          const qualCls = ` tg-q-${hourQuality(h)}`;
+          return `<div class="tg-seg ${cls} ${workCls}${bandCls}${qualCls}" data-h="${h}" style="left:${(h/24)*100}%;width:${(1/24)*100}%"></div>`;
+        }).join('');
+        return `<div class="tg-zone" data-has-overlap="${hasOverlap}">
+          <div class="tg-zone-top">
+            <div class="tg-zone-name">${city.f} ${city.n}${isHome?' 🏠':''}</div>
+            <div class="tg-zone-time">${fmtTime(cityDt)}${use24()?'':' '+fmtAMPM(cityDt)}</div>
+          </div>
+          <div class="tg-bar">
+            ${segs}
+            <div class="tg-needle" style="left:${pct}%"></div>
+          </div>
+          <div class="tg-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  let cityRows = cities.map((city, i) => {
+    const dt = refDt.setZone(city.tz);
+    return `<div class="mp-city-row" data-i="${i}">
+      <span class="mp-city-flag">${city.f}</span>
+      <div class="mp-city-name">${city.n}, ${city.c}</div>
+      <div class="mp-city-time">${fmtTime(dt)}${use24()?'':' '+fmtAMPM(dt)}</div>
+      <button class="mp-city-rm" onclick="removeMeetCity(${i})" aria-label="Remove ${city.n}">✕</button>
+    </div>`;
+  }).join('');
+
+  // Chosen time with persistent colon span for blink animation
+  const hStr = String(sliderH).padStart(2,'0');
+  const chosenTimeHTML = `<span class="mp-h">${hStr}</span><span class="mp-colon" aria-hidden="true">:</span><span class="mp-m">00</span>`;
+
+  return `<div class="mp-body">
+    <p class="mp-help">See when everyone can meet — and who's working outside normal hours.</p>
+
+    <div class="mp-city-list">
+      ${cityRows}
+      <button class="btn-outline" onclick="addMeetCity()" style="align-self:flex-start;">+ Add city</button>
+    </div>
+
+    ${cities.length ? `
+    <div class="mp-slider-wrap">
+      <div class="mp-slider-label">Drag the slider to pick a time</div>
+      <div class="mp-chosen-time" id="meetChosenTime">${chosenTimeHTML}</div>
+      <input type="range" class="mp-slider" min="0" max="23" value="${sliderH}"
+        id="meetSlider" aria-label="Choose hour">
+      <div class="mp-axis"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div>
+    </div>
+    ` : ''}
+
+    ${timelineHTML}
+    ${overlapHTML}
+    ${cities.length >= 2 ? renderFairnessHTML(cities, sliderH, state.settings) : ''}
+  </div>`;
+}
+
+function attachMeetingEvents() {
+  const slider = document.getElementById('meetSlider');
+  if (!slider) return;
+
+  // Live in-place updates while dragging — no re-render
+  slider.addEventListener('input', e => {
+    const h = parseInt(e.target.value);
+    state.meetSliderH = h;
+
+    // Update chosen time — surgically update digit span, never touch the colon span
+    const timeLabel = document.getElementById('meetChosenTime');
+    if (timeLabel) {
+      const hSpan = timeLabel.querySelector('.mp-h');
+      if (hSpan) hSpan.textContent = String(h).padStart(2,'0');
+    }
+
+    // Update each timeline needle and zone time in-place
+    const now = DateTime.now();
+    const refHome = state.home || (state.meetCities[0] ? { tz: state.meetCities[0].tz } : { tz: 'UTC' });
+    const refDt = now.setZone(refHome.tz).set({ hour: h, minute: 0, second: 0 });
+
+    const allZones = [...state.meetCities];
+    if (state.home && !allZones.find(c => c.tz===state.home.tz && c.n===state.home.n)) {
+      allZones.unshift(state.home);
+    }
+
+    document.querySelectorAll('.tg-zone').forEach((zoneEl, i) => {
+      const city = allZones[i];
+      if (!city) return;
+      const cityDt = refDt.setZone(city.tz);
+      const pct = ((cityDt.hour + cityDt.minute/60) / 24) * 100;
+      const needle = zoneEl.querySelector('.tg-needle');
+      if (needle) needle.style.left = pct + '%';
+      const timeEl = zoneEl.querySelector('.tg-zone-time');
+      if (timeEl) timeEl.textContent = fmtTime(cityDt) + (use24() ? '' : ' ' + fmtAMPM(cityDt));
+    });
+
+    // Update city row times in-place
+    state.meetCities.forEach((city, i) => {
+      const dt = refDt.setZone(city.tz);
+      const el = document.querySelector(`.mp-city-row[data-i="${i}"] .mp-city-time`);
+      if (el) el.textContent = fmtTime(dt) + (use24() ? '' : ' ' + fmtAMPM(dt));
+    });
+
+    // fc bar: move selected marker
+    try {
+      document.querySelectorAll('.fc-hour').forEach((cell, i) => {
+        cell.classList.toggle('fc-hour-selected', i === h);
+      });
+    } catch(e) {}
+
+    // Overlap slots: highlight the active hour in real-time
+    try {
+      document.querySelectorAll('.overlap-slot').forEach(btn => {
+        // Slot text is "HH:00" — parse the hour
+        const btnH = parseInt(btn.textContent);
+        btn.classList.toggle('is-active', btnH === h);
+      });
+    } catch(e) {}
+
+    // Verdict: dim briefly while dragging — full swap on 'change'
+    try {
+      const verdict = document.querySelector('.fc-verdict');
+      if (verdict) {
+        verdict.classList.add('fc-fading');
+        clearTimeout(verdict._fadeTimer);
+        verdict._fadeTimer = setTimeout(() => verdict.classList.remove('fc-fading'), 180);
+      }
+    } catch(e) {}
+
+    // Copy button: show chosen hour so it feels connected to the slider
+    try {
+      const copyBtn = document.querySelector('.fc-copy-btn');
+      if (copyBtn && !copyBtn.classList.contains('copied')) {
+        copyBtn.textContent = `Copy meeting time \u2022 ${String(h).padStart(2,'0')}:00`;
+      }
+    } catch(e) {}
+  });
+
+  // Full re-render when drag ends — recalcs overlap, fairness, everything
+  slider.addEventListener('change', () => {
+    renderCurrentTab();
+  });
+}
+
+function addMeetCity() {
+  openCityPicker('Add city', city => {
+    if (!state.meetCities.find(c => c.tz===city.tz && c.n===city.n)) {
+      state.meetCities.push(city);
+      saveState();
+    }
+    renderCurrentTab();
+  });
+}
+
+function removeMeetCity(i) {
+  state.meetCities.splice(i, 1);
+  saveState();
+  renderCurrentTab();
+}
+
+function setMeetSlider(h) {
+  state.meetSliderH = h;
+  renderCurrentTab();
+}
+
+/* ═══════════════════════════════════
+   SHARE
+═══════════════════════════════════ */
+function openShare() {
+  const p = new URLSearchParams();
+  if (state.home) p.set('home', `${state.home.n}::${state.home.tz}`);
+  if (state.clocks.length) p.set('cities', state.clocks.map(c => `${c.n}::${c.tz}`).join(','));
+  if (state.currentTab === 'converter' && state.convTime) {
+    p.set('convTime', state.convTime);
+    p.set('convDate', state.convDate||'');
+    if (state.convFrom) p.set('from', `${state.convFrom.n}::${state.convFrom.tz}`);
+    if (state.convTo)   p.set('to',   `${state.convTo.n}::${state.convTo.tz}`);
+  }
+  const url = `${location.href.split('?')[0]}?${p.toString()}`;
+  document.getElementById('shareLinkBox').textContent = url;
+  document.getElementById('shareModal').classList.remove('hidden');
+}
+
+function copyShareLink() {
+  const url = document.getElementById('shareLinkBox').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Copied link.');
+    closeModal('shareModal');
+  }).catch(() => {
+    showToast('Could not copy — try manually.');
+  });
+}
+
+function loadFromURL() {
+  const p = new URLSearchParams(location.search);
+  if (p.get('home')) {
+    const [n, tz] = p.get('home').split('::');
+    const city = CITIES.find(c => c.tz===tz && c.n===n) || CITIES.find(c => c.tz===tz);
+    if (city) state.home = city;
+  }
+  if (p.get('cities')) {
+    p.get('cities').split(',').forEach(s => {
+      const [n, tz] = s.split('::');
+      const city = CITIES.find(c => c.tz===tz && c.n===n) || CITIES.find(c => c.tz===tz);
+      if (city && !state.clocks.find(c => c.tz===tz && c.n===n)) state.clocks.push(city);
+    });
+  }
+  if (p.get('convTime')) {
+    state.convTime = p.get('convTime');
+    state.convDate = p.get('convDate') || state.convDate;
+    if (p.get('from')) {
+      const [n, tz] = p.get('from').split('::');
+      state.convFrom = CITIES.find(c => c.tz===tz && c.n===n) || CITIES.find(c => c.tz===tz);
+    }
+    if (p.get('to')) {
+      const [n, tz] = p.get('to').split('::');
+      state.convTo = CITIES.find(c => c.tz===tz && c.n===n) || CITIES.find(c => c.tz===tz);
+    }
+  }
+}
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ═══════════════════════════════════
+   LIVE TICK — in-place DOM updates, no full re-render
+═══════════════════════════════════ */
+let lastMinute = -1;
+let lastDate = '';
+
+function tick() {
+  const now = DateTime.now();
+  const currentMinute = now.minute;
+  const currentDate   = now.toFormat('yyyy-MM-dd');
+
+  if (state.currentTab === 'clock') {
+    // Update every second — only touch time/seconds nodes
+    state.clocks.forEach((city, i) => {
+      const dt = now.setZone(city.tz);
+      const timeEl = document.querySelector(`.city-card[data-i="${i}"] .cc-time`);
+      const ampmEl = document.querySelector(`.city-card[data-i="${i}"] .cc-ampm`);
+      if (timeEl) timeEl.textContent = fmtTime(dt);
+      if (ampmEl) ampmEl.textContent = fmtAMPM(dt);
+    });
+
+    // Full re-render only when minute changes (status chips, day labels may change)
+    if (currentMinute !== lastMinute) {
+      lastMinute = currentMinute;
+      renderCurrentTab();
+    }
+  }
+
+  // Converter: refresh date if calendar day rolled over
+  if (state.currentTab === 'converter') {
+    if (!state.convDateLocked && currentDate !== lastDate) {
+      state.convDate = currentDate;
+      renderCurrentTab();
+    }
+  }
+
+  lastDate = currentDate;
+}
+
+/* ═══════════════════════════════════
+   MODAL OVERLAY CLOSE
+═══════════════════════════════════ */
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => {
+    if (e.target === el) el.classList.add('hidden');
+  });
+});
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+function init() {
+  loadState();
+  applyTheme();
+
+  // Load from URL params
+  loadFromURL();
+
+  // Check if onboarding needed
+  if (state.home || location.search.includes('cities')) {
+    document.getElementById('onboarding').style.display = 'none';
+    document.getElementById('appShell').classList.remove('hidden');
+    refreshSettings();
+    renderCurrentTab();
+  } else {
+    ensureDemoCities();
+    initOnboarding();
+    obStartClock(); // start live preview as soon as onboarding is shown
+  }
+
+  // Sync settings UI
+  refreshSettings();
+
+  // Live clock — tick every second, updates in-place
+  setInterval(tick, 1000);
+
+  // System theme change listener
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (state.settings.theme === 'system') applyTheme();
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   MEETING COST — FAIRNESS ENGINE
+   Pure calculation module. No side effects.
+   No existing variables read except via explicit parameters.
+   Safe to remove: delete this block + the one line in renderMeetingHTML.
+═══════════════════════════════════════════════════════ */
+
+const MeetingCost = (() => {
+
+  // Cost score for a single person at a given local hour.
+  // Returns 0 (no cost) → 100 (maximum cost).
+  function scorePerson(localHour, workStart, workEnd) {
+    const h = localHour;
+    const ws = parseInt(workStart) || 9;
+    const we = parseInt(workEnd)   || 17;
+
+    // Core window: free
+    if (h >= ws && h < we) return 0;
+
+    // Early morning fringe (ws-2 to ws): mild
+    if (h >= ws - 2 && h < ws) return 20;
+
+    // Evening fringe (we to we+2): mild
+    if (h >= we && h < we + 2) return 25;
+
+    // Late evening (we+2 to 23): painful
+    if (h >= we + 2 && h <= 23) return 60;
+
+    // Early morning (0 to ws-2): very painful → sleep territory
+    if (h < ws - 2) return 85;
+
+    return 50; // fallback
+  }
+
+  // Classify an hour slot given cost scores for all participants.
+  // Returns: 'free' | 'shared' | 'unequal' | 'unfair'
+  function classifyHour(scores) {
+    if (!scores.length) return 'none';
+    const max  = Math.max(...scores);
+    const min  = Math.min(...scores);
+    const avg  = scores.reduce((a, b) => a + b, 0) / scores.length;
+
+    if (max === 0)   return 'free';      // everyone in working hours
+    if (max >= 60)   return 'unfair';    // someone in sleep/deep night
+    if (max - min > 30) return 'unequal'; // one person bears much more cost
+    if (avg <= 30)   return 'shared';    // everyone bends a little equally
+    return 'unequal';
+  }
+
+  // Human-readable label for a person's cost
+  function costLabel(score) {
+    if (score === 0)   return 'In working hours';
+    if (score <= 20)   return 'Slightly early';
+    if (score <= 25)   return 'Slightly late';
+    if (score <= 40)   return 'Early start';
+    if (score <= 60)   return 'Outside hours';
+    if (score <= 80)   return 'Very early';
+    return 'Sleep time';
+  }
+
+  function costPillClass(score) {
+    if (score === 0)  return 'fc-pill-free';
+    if (score <= 25)  return 'fc-pill-mild';
+    if (score <= 60)  return 'fc-pill-painful';
+    return 'fc-pill-bad';
+  }
+
+  // Verdict metadata for a classified hour
+  const VERDICTS = {
+    free:    { icon: '🟢', title: 'Fair for everyone',    bg: '' },
+    shared:  { icon: '🟡', title: 'Shared cost',          bg: '' },
+    unequal: { icon: '🟠', title: 'Unequal cost',         bg: '' },
+    unfair:  { icon: '🔴', title: 'Someone pays heavily', bg: '' },
+    none:    { icon: '⚪', title: 'No cities added',       bg: '' },
+  };
+
+  // Generate the natural-language description for a given hour
+  function describeHour(hour, cityScores, workStart, workEnd) {
+    const hStr = String(hour).padStart(2, '0') + ':00';
+    const cls  = classifyHour(cityScores.map(cs => cs.score));
+
+    if (cls === 'free') {
+      return `${hStr} works for everyone. All participants are within working hours.`;
+    }
+    if (cls === 'shared') {
+      const names = cityScores.map(cs => cs.city.n).join(' and ');
+      return `${hStr} is a slight stretch for ${names}, but the inconvenience is shared equally.`;
+    }
+    if (cls === 'unequal' || cls === 'unfair') {
+      const heaviest = cityScores.reduce((a, b) => b.score > a.score ? b : a);
+      const lightest = cityScores.reduce((a, b) => b.score < a.score ? b : a);
+      const label = costLabel(heaviest.score).toLowerCase();
+      if (cityScores.length === 2) {
+        return `${hStr}: ${heaviest.city.n} carries the cost (${label}). ${lightest.city.n} is comfortable.`;
+      }
+      const others = cityScores.filter(cs => cs.city.n !== heaviest.city.n).map(cs => cs.city.n).join(', ');
+      return `${hStr}: ${heaviest.city.n} carries most of the cost (${label}). ${others} ${cityScores.length > 2 ? 'are' : 'is'} more comfortable.`;
+    }
+    return `${hStr}: mixed availability.`;
+  }
+
+  // Generate shareable sentence for a given hour
+  function shareText(hour, cityScores, cls) {
+    const parts = cityScores.map(cs => {
+      const dt_h = String(cs.localHour).padStart(2,'0') + ':00';
+      return `${dt_h} ${cs.city.n}`;
+    }).join(' · ');
+    const fairness = { free: 'Fair for everyone', shared: 'Shared cost', unequal: 'Unequal — review before sending', unfair: 'Unfair — someone is up late/early' }[cls] || '';
+    return `${parts} — ${fairness}`;
+  }
+
+  // Main: compute all 24 hours for a set of cities
+  function compute(cities, refTZ, workStart, workEnd) {
+    if (!cities || cities.length < 2) return null;
+
+    const now = DateTime.now();
+    const hours = Array.from({ length: 24 }, (_, h) => {
+      const refDt = now.setZone(refTZ).set({ hour: h, minute: 0, second: 0 });
+      const cityScores = cities.map(city => {
+        const cityDt   = refDt.setZone(city.tz);
+        const score    = scorePerson(cityDt.hour, workStart, workEnd);
+        return { city, score, localHour: cityDt.hour };
+      });
+      const scores = cityScores.map(cs => cs.score);
+      const cls    = classifyHour(scores);
+      return { h, cls, cityScores };
+    });
+
+    return hours;
+  }
+
+  return { compute, classifyHour, scorePerson, costLabel, costPillClass, VERDICTS, describeHour, shareText };
+})();
+
+/* ═══════════════════════════════════════════════════════
+   MEETING COST — UI RENDERER
+   Takes data, returns an HTML string.
+   One try/catch: if anything throws, returns '' silently.
+   The existing app is completely unaffected by errors here.
+═══════════════════════════════════════════════════════ */
+
+function renderFairnessHTML(cities, sliderH, settings) {
+  try {
+    if (!cities || cities.length < 2) return '';
+
+    const refTZ   = (state.home || cities[0]).tz;
+    const ws      = settings.workStart;
+    const we      = settings.workEnd;
+    const hours   = MeetingCost.compute(cities, refTZ, ws, we);
+    if (!hours) return '';
+
+    const selected   = hours[sliderH] || hours[9];
+    const selCls     = selected.cls;
+    const verdict    = MeetingCost.VERDICTS[selCls] || MeetingCost.VERDICTS.none;
+    const description = MeetingCost.describeHour(sliderH, selected.cityScores, ws, we);
+    const shareSentence = MeetingCost.shareText(sliderH, selected.cityScores, selCls);
+
+    // 24-hour fairness bar
+    const barCells = hours.map(({ h, cls }) => {
+      const isSel = h === sliderH;
+      return `<div class="fc-hour fc-${cls}${isSel ? ' fc-hour-selected' : ''}"
+        onclick="fcSelectHour(${h})"
+        title="${String(h).padStart(2,'0')}:00"
+        role="button"
+        aria-label="Hour ${h}: ${cls}"></div>`;
+    }).join('');
+
+    // Per-person pills for selected hour
+    const pills = selected.cityScores.map(({ city, score, localHour }) => {
+      const pillCls = MeetingCost.costPillClass(score);
+      const label   = MeetingCost.costLabel(score);
+      const localStr = String(localHour).padStart(2,'0') + ':00';
+      return `<div class="fc-person-pill ${pillCls}">
+        <span>${city.f}</span>
+        <span>${city.n}</span>
+        <span style="opacity:0.6;font-size:11px;">${localStr}</span>
+        <span class="fc-pill-cost">· ${label}</span>
+      </div>`;
+    }).join('');
+
+    // Verdict background tint
+    const verdictBg = {
+      free:    'background:var(--c-green-bg)',
+      shared:  'background:var(--c-amber-bg)',
+      unequal: 'background:#fff4ee',
+      unfair:  'background:var(--c-red-bg)',
+    }[selCls] || '';
+    const verdictBgDark = {
+      free:    '[data-theme=dark]background:#081a0e',
+      shared:  '',
+      unequal: '',
+      unfair:  '',
+    }[selCls] || '';
+
+    return `<div class="fc-section">
+
+      <div class="fc-header">
+        <span class="fc-header-label">Meeting Cost</span>
+        <span class="fc-header-tag">Who pays?</span>
+      </div>
+
+      <div class="fc-bar-wrap">
+        <div class="fc-bar-label">Drag the timeline · tap any hour to see its fairness</div>
+        <div class="fc-bar" role="group" aria-label="24-hour fairness view">${barCells}</div>
+        <div class="fc-bar-axis">
+          <span>12am</span><span>3</span><span>6</span><span>9</span>
+          <span>12pm</span><span>3</span><span>6</span><span>9</span><span>12am</span>
+        </div>
+      </div>
+
+      <div class="fc-legend">
+        <div class="fc-legend-item"><div class="fc-legend-dot" style="background:#5cb87a"></div> Fair for all</div>
+        <div class="fc-legend-item"><div class="fc-legend-dot" style="background:#e8b830"></div> Shared stretch</div>
+        <div class="fc-legend-item"><div class="fc-legend-dot" style="background:#e07840"></div> Unequal</div>
+        <div class="fc-legend-item"><div class="fc-legend-dot" style="background:#cc4444"></div> Unfair</div>
+      </div>
+
+      <div class="fc-verdict" data-verdict="${selCls}" style="${verdictBg}">
+        <div class="fc-verdict-state">
+          <div class="fc-verdict-icon">${verdict.icon}</div>
+          <div class="fc-verdict-title">${verdict.title}</div>
+        </div>
+        <div class="fc-verdict-body">${description}</div>
+        <div class="fc-persons">${pills}</div>
+      </div>
+
+      <div class="fc-share-row">
+        <div class="fc-share-text" id="fcShareText">${shareSentence}</div>
+        <button class="fc-copy-btn" onclick="fcCopyMeetingTime()" aria-label="Copy meeting time">Copy meeting time &bull; ${String(sliderH).padStart(2,'0')}:00</button>
+      </div>
+
+    </div>`;
+
+  } catch (e) {
+    // Graceful failure: feature is invisible, app continues normally
+    return '';
+  }
+}
+
+// Called when user taps a bar cell — updates slider and re-renders
+function fcSelectHour(h) {
+  state.meetSliderH = h;
+  renderCurrentTab();
+}
+
+// Primary copy action — copies the chosen meeting time + share sentence
+function fcCopyMeetingTime() {
+  const h = parseInt(state.meetSliderH) || 9;
+  const hh = String(h).padStart(2,'0');
+  const shareEl = document.getElementById('fcShareText');
+  const shareText = shareEl ? shareEl.textContent : '';
+
+  // Build a clean copyable string: "Meeting at 14:00 · <share sentence>"
+  const copyText = shareText
+    ? `Meeting at ${hh}:00 · ${shareText}`
+    : `Meeting at ${hh}:00`;
+
+  const btn = document.querySelector('.fc-copy-btn');
+
+  navigator.clipboard.writeText(copyText).then(() => {
+    if (btn) {
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.textContent = `Copy meeting time \u2022 ${hh}:00`;
+      }, 1800);
+    }
+  }).catch(() => {
+    showToast('Could not copy — try manually.');
+  });
+}
+
+// Legacy alias — kept for safety in case any path still references old name
+function fcCopyShareText() { fcCopyMeetingTime(); }
+
+init();
+</script>
+</body>
+</html>
